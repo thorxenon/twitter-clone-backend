@@ -1,4 +1,5 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Role } from "src/auth/entities/role.entity";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: 'users' })
 export class User {
@@ -14,12 +15,19 @@ export class User {
     @Column({ type: 'varchar', length: 255, default: '/uploads/user/images/default.png' })
     avatar: string;
 
-    @Column({ type: 'longtext', nullable: true })
+    @ManyToOne(() => Role, (role) => role.id)
+    @JoinColumn({ name: 'role' })
+    role: Role;
+
+    @Column({ name: 'role' })
+    roleId: number;
+
+    @Column({ type: 'text', nullable: true })
     bio: string;
 
     @Column({ type: 'varchar', length: 255, nullable: true })
     link: string;
-    
+
     @Column({ type: 'varchar', length: 255 })
     full_name: string;
 
