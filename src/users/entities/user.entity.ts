@@ -1,9 +1,9 @@
 import { Role } from "src/auth/entities/role.entity";
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: 'users' })
 export class User {
-    @PrimaryGeneratedColumn()
+    @PrimaryColumn({ type: 'varchar', length: 255 })
     nickname: string;
 
     @Column({ unique: true, type: 'varchar', length: 255, nullable: false })
@@ -33,4 +33,7 @@ export class User {
 
     @Column({ type: 'date' })
     birth_date: Date;
+
+    @CreateDateColumn({ name: 'created_at' })
+    createdAt: Date;
 }

@@ -10,6 +10,7 @@ import { join } from 'path';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { TweetsModule } from './tweets/tweets.module';
+import { RetweetModule } from './retweet/retweet.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { TweetsModule } from './tweets/tweets.module';
     AuthModule,
     UsersModule,
     TweetsModule,
+    RetweetModule,
     
   ],
   controllers: [AppController],
