@@ -51,7 +51,6 @@ import { RetweetModule } from './retweet/retweet.module';
     UsersModule,
     TweetsModule,
     RetweetModule,
-    
   ],
   controllers: [AppController],
   providers: [

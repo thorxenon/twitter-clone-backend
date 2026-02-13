@@ -1,6 +1,8 @@
+import { Retweet } from "src/retweet/entities/retweet.entity";
 import { User } from "src/users/entities/user.entity";
-import { Column, CreateDateColumn, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
+@Entity({ name: 'tweets' })
 export class Tweet {
     @PrimaryGeneratedColumn()
     id: number;
@@ -18,6 +20,9 @@ export class Tweet {
     @ManyToOne(() => Tweet, (tweet) => tweet.id)
     @JoinColumn({ name: 'parent_tweet' })
     parentTweet: Tweet;
+
+    @OneToMany(() => Retweet, (retweet) => retweet.tweet)
+    retweets: Retweet[];
 
     @Column({ name: 'parent_tweet', nullable: true })
     parentTweetId: number;
