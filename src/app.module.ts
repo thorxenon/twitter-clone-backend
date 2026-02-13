@@ -11,6 +11,10 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { TweetsModule } from './tweets/tweets.module';
 import { RetweetModule } from './retweet/retweet.module';
+import { AuthService } from './auth/auth.service';
+import { UsersService } from './users/users.service';
+import { TweetsService } from './tweets/tweets.service';
+import { RetweetService } from './retweet/retweet.service';
 
 @Module({
   imports: [
@@ -42,7 +46,7 @@ import { RetweetModule } from './retweet/retweet.module';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '7d' },
+        signOptions: { expiresIn: '14d' },
       }),
       global: true, // Torna o JwtModule global
     }),
@@ -55,14 +59,13 @@ import { RetweetModule } from './retweet/retweet.module';
   controllers: [AppController],
   providers: [
       AppService,
-      
     ],
   exports: [ JwtModule, TypeOrmModule  ],
 })
 export class AppModule implements NestModule{
   configure(consumer: MiddlewareConsumer){
-    consumer.apply(AuthMiddleware).forRoutes(
+    // consumer.apply(AuthMiddleware).forRoutes(
       
-    );  
+    // );  
   }
 }

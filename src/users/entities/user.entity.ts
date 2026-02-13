@@ -1,5 +1,7 @@
 import { Role } from "src/auth/entities/role.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import bcrypt from 'bcrypt';
+
 
 @Entity({ name: 'users' })
 export class User {
@@ -36,4 +38,13 @@ export class User {
 
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;
+
+    @BeforeInsert()
+    private async generateHash(){
+        this.password = await bcrypt.hash(this.password, 12);
+    }
+
+    async verifyPassword(password: string): Promise<boolean>{
+        return await bcrypt.compare(password, this.password);
+    }
 }
