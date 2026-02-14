@@ -2,27 +2,24 @@ import { Tweet } from "src/tweets/entities/tweet.entity";
 import { User } from "src/users/entities/user.entity";
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity({ name: 'retweets' })
-export class Retweet {
+@Entity({ name: 'tweet_likes' })
+export class Like {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @JoinColumn({ name: 'user_nickname' })
-    @ManyToOne(() => User, (user) => user.nickname)
-    user: User;
-
-    @Column({ name: 'user_nickname' })
-    userNickname: string;
-
+    @ManyToOne(() => Tweet, (tweet) => tweet.likes)
     @JoinColumn({ name: 'tweet_id' })
-    @ManyToOne(() => Tweet, (tweet) => tweet.id)
     tweet: Tweet;
 
     @Column({ name: 'tweet_id' })
     tweetId: number;
 
-    @Column({ type: 'text', nullable: true })
-    body: string;
+    @ManyToOne(() => User, (user) => user.nickname)
+    @JoinColumn({ name: 'user_nickname' })
+    user: User;
+
+    @Column({ name: 'user_nickname' })
+    userNickname: string;
 
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;

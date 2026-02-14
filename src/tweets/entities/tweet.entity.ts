@@ -1,38 +1,58 @@
-import { Retweet } from "src/retweet/entities/retweet.entity";
 import { User } from "src/users/entities/user.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from "typeorm";
+import { Like } from "src/likes/entities/like.entity";
 
-@Entity({ name: 'tweets' })
+@Entity({ name: "tweets" })
 export class Tweet {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @JoinColumn({ name: 'user_nickname' })
-    @ManyToOne(() => User, (user) => user.nickname)
-    user: User;
+  @ManyToOne(() => User, (user) => user.tweets)
+  @JoinColumn({ name: "user_id" })
+  user: User;
 
-    @Column({ name: 'user_nickname' })
-    userNickname: string;
+  @Column({ name: "user_id" })
+  userId: number;
 
-    @Column({ type: 'text', nullable: false })
-    body: string;
+  @Column({ type: "text", nullable: false })
+  body: string;
 
-    @ManyToOne(() => Tweet, (tweet) => tweet.id)
-    @JoinColumn({ name: 'parent_tweet' })
-    parentTweet: Tweet;
+  // ===== REPLY (estrutura hierárquica) =====
+  @ManyToOne(() => Tweet, (tweet) => tweet.replies, { nullable: true })
+  @JoinColumn({ name: "reply_to_id" })
+  replyTo: Tweet;
 
-    @OneToMany(() => Retweet, (retweet) => retweet.tweet)
-    retweets: Retweet[];
+  @Column({ name: "reply_to_id", nullable: true })
+  replyToId: number;
 
-    @Column({ name: 'parent_tweet', nullable: true })
-    parentTweetId: number;
+  @OneToMany(() => Tweet, (tweet) => tweet.replyTo)
+  replies: Tweet[];
 
-    @Column({ type: 'varchar', length: 255, nullable: true })
-    image: string;
+  // ===== QUOTE TWEET =====
+  @ManyToOne(() => Tweet, { nullable: true })
+  @JoinColumn({ name: "quoted_tweet_id" })
+  quotedTweet: Tweet;
 
-    @OneToMany(() => Tweet, (tweet) => tweet.parentTweet)
-    replies: Tweet[];
+  @Column({ name: "quoted_tweet_id", nullable: true })
+  quotedTweetId: number;
 
-    @CreateDateColumn({ name: 'created_at' })
-    createdAt: Date;
+  @OneToMany(() => Like, (like) => like.tweet)
+  likes: Like[];
+
+  @Column({ name: "likes_count", default: 0 })
+  likesCount: number;
+
+  @Column({ type: "varchar", length: 255, nullable: true })
+  image: string;
+
+  @CreateDateColumn({ name: "created_at" })
+  createdAt: Date;
 }

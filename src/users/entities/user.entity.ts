@@ -1,6 +1,8 @@
 import { Role } from "src/auth/entities/role.entity";
-import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import bcrypt from 'bcrypt';
+import { Tweet } from "src/tweets/entities/tweet.entity";
+import { Like } from "src/likes/entities/like.entity";
 
 
 @Entity({ name: 'users' })
@@ -14,6 +16,9 @@ export class User {
     @Column({ type: 'varchar', length: 255 })
     password: string;
 
+    @OneToMany(() => Tweet, (tweet) => tweet.user)
+    tweets: Tweet[];
+
     @Column({ type: 'varchar', length: 255, default: '/uploads/user/images/default.png' })
     avatar: string;
 
@@ -23,6 +28,9 @@ export class User {
 
     @Column({ name: 'role' })
     roleId: number;
+
+    @OneToMany(() => Like, (like) => like.user)
+    likes: Like[];
 
     @Column({ type: 'text', nullable: true })
     bio: string;
