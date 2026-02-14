@@ -60,8 +60,10 @@ import { LikesModule } from './likes/likes.module';
 })
 export class AppModule implements NestModule{
   configure(consumer: MiddlewareConsumer){
-    // consumer.apply(AuthMiddleware).forRoutes(
-      
-    // );  
+    consumer.apply(AuthMiddleware).forRoutes(
+      '/tweets',
+      '/likes',
+      '/users'
+    );  
   }
 }
