@@ -11,6 +11,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { TweetsModule } from './tweets/tweets.module';
 import { LikesModule } from './likes/likes.module';
+import { TrendsModule } from './trends/trends.module';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { LikesModule } from './likes/likes.module';
     UsersModule,
     TweetsModule,
     LikesModule,
+    TrendsModule,
   ],
   controllers: [AppController],
   providers: [
