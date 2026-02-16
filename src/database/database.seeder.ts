@@ -3,9 +3,6 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Role } from "src/auth/entities/role.entity";
 import { User } from "src/users/entities/user.entity";
 import { DeepPartial, Repository } from "typeorm";
-import dotenv from "dotenv";
-
-dotenv.config();
 
 @Injectable()
 export class DatabaseSeeder{
@@ -35,7 +32,17 @@ export class DatabaseSeeder{
                 birth_date: new Date(process.env.ADMIN_BIRTH_DATE as string)
             });
 
+            const defaultUserAdmin: DeepPartial<User> = this.userRepository.create({
+                nickname: 'testuser',
+                full_name: 'Test User',
+                email: 'testuser@example.com',
+                roleId: defaultRole.id,
+                password: '12345678',
+                birth_date: new Date('1990-01-01')
+            });
+
             await this.userRepository.save(newUserAdmin);
+            await this.userRepository.save(defaultUserAdmin);
             console.log("Database seeded successfully.");
         }catch(error){
             console.error("Error seeding database:", error);

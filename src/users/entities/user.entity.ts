@@ -1,6 +1,6 @@
 import { Role } from "src/auth/entities/role.entity";
 import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 import { Tweet } from "src/tweets/entities/tweet.entity";
 import { Like } from "src/likes/entities/like.entity";
 

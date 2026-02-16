@@ -39,30 +39,7 @@ export class RolesSeeder{
             const defaultRolePermission = new RoleHasPermission();
             defaultRolePermission.role = defaultRole;
             defaultRolePermission.permission = permission;
-            rolePermissions.push(defaultRolePermission);
-        }
-
-        for(const permission of allPermissions.filter(p => p.name.endsWith('-show'))){
-            const userPermisison = new RoleHasPermission();
-            userPermisison.role = defaultRole;
-            userPermisison.permission = permission;
-            userRolePermissions.push(userPermisison);
-        }
-
-        const churchesListPermission = allPermissions.find(p => p.name === 'churches-list');
-        if (churchesListPermission) {
-            userRolePermissions.push(this.roleHasPermissionRepository.create({
-                role: defaultRole,
-                permission: churchesListPermission
-            }));
-        }
-
-        const liveStreamListPermissions = allPermissions.find(p => p.name === 'live_streams-list');
-        if (liveStreamListPermissions) {
-            userRolePermissions.push(this.roleHasPermissionRepository.create({
-                role: defaultRole,
-                permission: liveStreamListPermissions
-            }));
+            userRolePermissions.push(defaultRolePermission);
         }
 
         const createUserRolePermissions = this.roleHasPermissionRepository.create(userRolePermissions);

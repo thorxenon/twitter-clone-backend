@@ -1,4 +1,8 @@
 {
+  "exclude":[
+    "node_modules",
+    "dist"
+  ],
   "compilerOptions": {
     "module": "commonjs",
     "declaration": true,
@@ -16,6 +20,7 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
+    "typeRoots": ["./src/types", "./node_modules/@types"],
     "noFallthroughCasesInSwitch": false
   }
 }
