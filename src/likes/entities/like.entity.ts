@@ -14,7 +14,7 @@ export class Like {
     @Column({ name: 'tweet_id' })
     tweetId: number;
 
-    @ManyToOne(() => User, (user) => user.nickname)
+    @ManyToOne(() => User, (user) => user.slug)
     @JoinColumn({ name: 'user_nickname' })
     user: User;
 

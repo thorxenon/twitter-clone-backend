@@ -4,7 +4,7 @@ export class SignUpDto{
     @IsNotEmpty()
     @IsString()
     @MinLength(3)
-    nickname: string;
+    slug: string;
 
     @IsEmail()
     @IsNotEmpty()

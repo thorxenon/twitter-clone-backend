@@ -6,6 +6,7 @@ import { SignUpDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import slug from 'slug';
 
 @Injectable()
 export class AuthService {
@@ -18,7 +19,7 @@ export class AuthService {
 
     async signup(createUserDto: SignUpDto){
         try{
-            if(await this.userRepository.findOne({ where:{ nickname: createUserDto.nickname } })) {
+            if(await this.userRepository.findOne({ where:{ slug: createUserDto.slug } })) {
                 throw new HttpException("Nickname already exists", HttpStatus.BAD_REQUEST);
             }
 
@@ -36,20 +37,20 @@ export class AuthService {
 
     async login(loginDto: LoginDto): Promise<{ token: string }>{
         try{
-            const user = await this.userRepository.findOne({ where: { nickname: loginDto.nickname } });
+            const user = loginDto.slug ? await this.userRepository.findOne({ where: { slug: loginDto.slug } }) : await this.userRepository.findOne({ where: { email: loginDto.email } });
             if(!user) throw new HttpException('User not found', 404);
 
             const isPasswordValid = await user.verifyPassword(loginDto.password);
-            if(!isPasswordValid) throw new HttpException('Invalid password', 401);
+            if(!isPasswordValid) throw new HttpException('Invalid Credentials password', 401);
             
-            const payload = { nickname: user.nickname, role: user.roleId };
+            const payload = { slug: user.slug, role: user.role_id };
             const token = this.jwtService.sign(payload, {
-            secret: this.configService.get<string>('JWT_SECRET'),
-            expiresIn: '10d'
+                secret: this.configService.get<string>('JWT_SECRET'),
+                expiresIn: '10d'
             });
 
             return {
-            token
+                token
             };
         }catch(error){
             throw new HttpException(error.message, error.status || 500);

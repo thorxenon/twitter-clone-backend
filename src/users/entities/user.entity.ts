@@ -8,7 +8,7 @@ import { Like } from "src/likes/entities/like.entity";
 @Entity({ name: 'users' })
 export class User {
     @PrimaryColumn({ type: 'varchar', length: 255 })
-    nickname: string;
+    slug: string;
 
     @Column({ unique: true, type: 'varchar', length: 255, nullable: false })
     email: string;
@@ -27,7 +27,7 @@ export class User {
     role: Role;
 
     @Column({ name: 'role' })
-    roleId: number;
+    role_id: number;
 
     @OneToMany(() => Like, (like) => like.user)
     likes: Like[];
