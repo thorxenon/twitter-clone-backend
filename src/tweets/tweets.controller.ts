@@ -7,6 +7,7 @@ import { PermissionGuard } from 'src/guards/permission.guard';
 import { RequiredPermission } from 'src/decorators/permission.decorator';
 import { UpdateTweetDto } from './dto/update-tweet.dto';
 import { CreateLikeDto } from 'src/likes/dto/create-like.dto';
+import { Request } from 'express';
 
 @Controller('tweets')
 @UseGuards(AuthGuard(), PermissionGuard)
@@ -20,8 +21,8 @@ export class TweetsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string){
-
+  findOne(@Param('id') id: string, @Req() req: Request){
+    
   }
 
   @Post(':id/like')

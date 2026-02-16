@@ -37,26 +37,4 @@ export class UsersService {
   remove(id: number) {
     return `This action removes a #${id} user`;
   }
-
-  async login(loginDto: LoginDto): Promise<{ token: string }>{
-    try{
-      const user = await this.userRepository.findOne({ where: { nickname: loginDto.nickname } });
-      if(!user) throw new HttpException('User not found', 404);
-
-      const isPasswordValid = await user.verifyPassword(loginDto.password);
-      if(!isPasswordValid) throw new HttpException('Invalid password', 401);
-      
-      const payload = { nickname: user.nickname, role: user.roleId };
-      const token = this.jwtService.sign(payload, {
-        secret: this.configService.get<string>('JWT_SECRET'),
-        expiresIn: '10d'
-      });
-
-      return {
-        token
-      };
-    }catch(error){
-      throw new HttpException(error.message, error.status || 500);
-    }
-  }
 }

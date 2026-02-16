@@ -12,23 +12,34 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
+  @Get(':nickname')
+  findOne(@Param('nickname') nickname: string) {
+
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  @Get(':nickname/tweets')
+  findUserTweets(@Param('nickname') nickname: string) {
+
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  @Post(':nickname/follow')
+  followUser(@Param('nickname') nickname: string) {
+
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  @Patch(':nickname')
+  update(@Param('nickname') nickname: string, @Body() updateUserDto: UpdateUserDto) {
+
   }
+
+  @Patch(':nickname/avatar')
+  updateAvatar(@Param('nickname') nickname: string) {
+
+  }
+
+  @Patch(':nickname/cover')
+  updateCover(@Param('nickname') nickname: string) {
+    
+  }
+
 }
