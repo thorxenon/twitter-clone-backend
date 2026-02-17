@@ -5,13 +5,17 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Tweet } from './entities/tweet.entity';
 import { PassportModule } from '@nestjs/passport';
 import { RoleHasPermission } from 'src/auth/entities/roleHasPermission.entity';
+import { User } from 'src/users/entities/user.entity';
+import { Like } from 'src/likes/entities/like.entity';
+import { Trend } from 'src/trends/entities/trend.entity';
+import { TrendsService } from 'src/trends/trends.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ Tweet, RoleHasPermission ]),
+    TypeOrmModule.forFeature([ Tweet, RoleHasPermission, User, Like, Trend ]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
   ],
   controllers: [TweetsController],
-  providers: [TweetsService],
+  providers: [TweetsService, TrendsService],
 })
 export class TweetsModule {}

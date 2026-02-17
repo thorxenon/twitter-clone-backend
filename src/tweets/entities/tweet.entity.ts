@@ -15,12 +15,12 @@ export class Tweet {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.tweets)
-  @JoinColumn({ name: "user_id" })
+  @ManyToOne(() => User, (user) => user.slug)
+  @JoinColumn({ name: "user_slug" })
   user: User;
 
-  @Column({ name: "user_id" })
-  userId: number;
+  @Column({ name: "user_slug", type: "varchar", length: 255 })
+  userSlug: string;
 
   @Column({ type: "text", nullable: false })
   body: string;

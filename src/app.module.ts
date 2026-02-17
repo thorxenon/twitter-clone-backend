@@ -18,13 +18,13 @@ import { DatabaseModule } from './database/database.module';
   imports: [
     ServeStaticModule.forRoot(
       {
-        rootPath: join('public/uploads/tweet/images'),
+        rootPath: join('public/uploads/tweet-images'),
         serveRoot: '/uploads/tweet/images',
       },
       {
         rootPath: join('public/uploads/user-avatar'),
         serveRoot: '/uploads/user-avatar',
-      }
+      },
     ),
     ConfigModule.forRoot({
       isGlobal: true,

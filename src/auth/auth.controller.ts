@@ -55,7 +55,7 @@ export class AuthController {
     }
   }))
   @HttpCode(HttpStatus.CREATED)
-  async signup(@Body() createUserDto: SignUpDto, @UploadedFile() avatar: Express.Multer.File) {
+  async signup(@Body() createUserDto: SignUpDto, @UploadedFile() avatar?: Express.Multer.File) {
     if(avatar){
       createUserDto.avatar = `/uploads/user-avatar/${avatar.filename}`;
     }

@@ -68,7 +68,15 @@ export class AuthService {
 
     async login(loginDto: LoginDto): Promise<{ token: string }>{
         try{
-            const user = loginDto.slug ? await this.userRepository.findOne({ where: { slug: loginDto.slug } }) : await this.userRepository.findOne({ where: { email: loginDto.email } });
+            const user = loginDto.slug
+                    ? await this.userRepository.findOne({
+                            where: { slug: loginDto.slug },
+                            select: { slug: true, role_id: true, password: true }
+                        })
+                    : await this.userRepository.findOne({
+                            where: { email: loginDto.email },
+                            select: { slug: true, role_id: true, password: true }
+                        });
             if(!user) throw new HttpException('User not found', 404);
 
             const isPasswordValid = await user.verifyPassword(loginDto.password);

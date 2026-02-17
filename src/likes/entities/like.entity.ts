@@ -15,11 +15,11 @@ export class Like {
     tweetId: number;
 
     @ManyToOne(() => User, (user) => user.slug)
-    @JoinColumn({ name: 'user_nickname' })
+    @JoinColumn({ name: 'user_slug' })
     user: User;
 
-    @Column({ name: 'user_nickname' })
-    userNickname: string;
+    @Column({ name: 'user_slug' })
+    userSlug: string;
 
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;
