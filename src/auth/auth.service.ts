@@ -7,6 +7,9 @@ import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import slug from 'slug';
+import { UsersService } from 'src/users/users.service';
+import { create } from 'node:domain';
+import { Role } from './entities/role.entity';
 
 @Injectable()
 export class AuthService {
@@ -14,22 +17,50 @@ export class AuthService {
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
         private readonly jwtService: JwtService,
-        private readonly configService: ConfigService
+        private readonly configService: ConfigService,
+        private readonly userService: UsersService,
+        @InjectRepository(Role)
+        private readonly roleRepository: Repository<Role>
     ){}
 
     async signup(createUserDto: SignUpDto){
         try{
-            if(await this.userRepository.findOne({ where:{ slug: createUserDto.slug } })) {
-                throw new HttpException("Nickname already exists", HttpStatus.BAD_REQUEST);
+            let genSlug = true;
+            let userSlug = slug(createUserDto.name, { lower: true });
+            while(genSlug){
+                const hasSlug = await this.userService.findUserBySlug(userSlug);
+                if(hasSlug){
+                    const slugSuffix = Math.floor(Math.random() * 99999).toString();
+                    userSlug = slug(createUserDto.name, { lower: true }) + slugSuffix;
+                }
+
+                genSlug = !!hasSlug;
             }
 
             if(await this.userRepository.findOne({ where:{ email: createUserDto.email } })) {
                 throw new HttpException("Email already exists", HttpStatus.BAD_REQUEST);
             }
 
-            const newUser = this.userRepository.create(createUserDto);
+            const defaultRole = await this.roleRepository.findOne({ where: { name: 'default' } });
+            if(!defaultRole) throw new HttpException("Default role not found", HttpStatus.INTERNAL_SERVER_ERROR);
+
+            const newUser = this.userRepository.create({
+                ...createUserDto,
+                slug: userSlug,
+                role_id: defaultRole.id
+            });
+
+            const payload = { slug: newUser.slug, role: newUser.role_id };
+            const token = this.jwtService.sign(payload, {
+                secret: this.configService.get<string>('JWT_SECRET'),
+                expiresIn: '14d'
+            });
+
             await this.userRepository.save(newUser);
-            return newUser;
+            return {
+                ...newUser,
+                token
+            };
         }catch(error){
             throw new HttpException("Error creating user", HttpStatus.INTERNAL_SERVER_ERROR)
         }
@@ -46,7 +77,7 @@ export class AuthService {
             const payload = { slug: user.slug, role: user.role_id };
             const token = this.jwtService.sign(payload, {
                 secret: this.configService.get<string>('JWT_SECRET'),
-                expiresIn: '10d'
+                expiresIn: '14d'
             });
 
             return {

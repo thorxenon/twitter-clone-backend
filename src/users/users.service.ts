@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LoginDto } from 'src/auth/dto/login.dto';
@@ -24,6 +24,19 @@ export class UsersService {
 
   findAll() {
     return `This action returns all users`;
+  }
+
+  async findUserBySlug(slug: string): Promise<User | null>{
+    try{
+      const user = await this.userRepository.findOne({ where: { slug } });
+      if(user){
+        return user;
+      }
+
+      return null;
+    }catch(error){
+      throw new HttpException("Error fetching user", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   findOne(id: number) {

@@ -13,7 +13,7 @@ export class User {
     @Column({ unique: true, type: 'varchar', length: 255, nullable: false })
     email: string;
 
-    @Column({ type: 'varchar', length: 255 })
+    @Column({ type: 'varchar', length: 255, select: false })
     password: string;
 
     @OneToMany(() => Tweet, (tweet) => tweet.user)
@@ -39,7 +39,7 @@ export class User {
     link: string;
 
     @Column({ type: 'varchar', length: 255 })
-    full_name: string;
+    name: string;
 
     @Column({ type: 'date' })
     birth_date: Date;

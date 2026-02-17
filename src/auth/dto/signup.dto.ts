@@ -1,4 +1,4 @@
-import { IsDate, IsEmail, IsNotEmpty, IsOptional, IsString, MinLength } from "class-validator";
+import { IsDateString, IsEmail, IsNotEmpty, IsOptional, IsString, MinLength } from "class-validator";
 
 export class SignUpDto{
     @IsNotEmpty()
@@ -21,18 +21,18 @@ export class SignUpDto{
 
     @IsString()
     @IsOptional()
-    bio: string;
+    bio?: string;
 
     @IsString()
     @IsOptional()
-    link: string;
+    link?: string;
 
     @IsString()
     @IsNotEmpty()
     @MinLength(3)
-    full_name: string;
+    name: string;
 
-    @IsDate()
+    @IsDateString()
     @IsNotEmpty()
-    birth_date: Date;
+    birth_date: string;
 }

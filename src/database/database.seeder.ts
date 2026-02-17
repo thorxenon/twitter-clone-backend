@@ -25,7 +25,7 @@ export class DatabaseSeeder{
 
             const newUserAdmin: DeepPartial<User> = this.userRepository.create({
                 slug: process.env.ADMIN_NICKNAME as string,
-                full_name: process.env.ADMIN_FULL_NAME as string,
+                name: process.env.ADMIN_FULL_NAME as string,
                 email: process.env.ADMIN_EMAIL as string,
                 role_id: adminRole.id,
                 password: process.env.ADMIN_PASSWORD as string,
@@ -34,7 +34,7 @@ export class DatabaseSeeder{
 
             const defaultUserAdmin: DeepPartial<User> = this.userRepository.create({
                 slug: 'testuser',
-                full_name: 'Test User',
+                name: 'Test User',
                 email: 'testuser@example.com',
                 role_id: defaultRole.id,
                 password: '12345678',

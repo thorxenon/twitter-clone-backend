@@ -20,6 +20,10 @@ import { DatabaseModule } from './database/database.module';
       {
         rootPath: join('public/uploads/tweet/images'),
         serveRoot: '/uploads/tweet/images',
+      },
+      {
+        rootPath: join('public/uploads/user-avatar'),
+        serveRoot: '/uploads/user-avatar',
       }
     ),
     ConfigModule.forRoot({
