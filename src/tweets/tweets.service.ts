@@ -6,13 +6,15 @@ import { Tweet } from './entities/tweet.entity';
 import { DeepPartial, Repository } from 'typeorm';
 import { Trend } from 'src/trends/entities/trend.entity';
 import { TrendsService } from 'src/trends/trends.service';
+import { LikesService } from 'src/likes/likes.service';
 
 @Injectable()
 export class TweetsService {
   constructor(
     @InjectRepository(Tweet)
     private readonly tweetRepository: Repository<Tweet>,
-    private readonly trendService: TrendsService
+    private readonly trendService: TrendsService,
+    private readonly likeService: LikesService
   ){}
 
 
@@ -74,8 +76,13 @@ export class TweetsService {
     return `This action returns all tweets`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} tweet`;
+  async findOne(id: number, userSlug: string) {
+    const tweet = await this.tweetRepository.findOne({ where: { id } });
+    if(!tweet) throw new HttpException('Tweet not found', HttpStatus.NOT_FOUND);
+
+    const isLikedByUser = await this.likeService.isLikedByUser(tweet.id, userSlug);
+    const likeCount = await this.likeService.countTweetLike(tweet.id);
+    return { ...tweet, isLikedByUser , likeCount };
   }
 
   update(id: number, updateTweetDto: UpdateTweetDto) {

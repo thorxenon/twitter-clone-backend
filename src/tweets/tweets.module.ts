@@ -9,6 +9,7 @@ import { User } from 'src/users/entities/user.entity';
 import { Like } from 'src/likes/entities/like.entity';
 import { Trend } from 'src/trends/entities/trend.entity';
 import { TrendsService } from 'src/trends/trends.service';
+import { LikesService } from 'src/likes/likes.service';
 
 @Module({
   imports: [
@@ -16,6 +17,6 @@ import { TrendsService } from 'src/trends/trends.service';
     PassportModule.register({ defaultStrategy: 'jwt' }),
   ],
   controllers: [TweetsController],
-  providers: [TweetsService, TrendsService],
+  providers: [ TweetsService, TrendsService, LikesService ],
 })
 export class TweetsModule {}

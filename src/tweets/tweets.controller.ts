@@ -61,7 +61,9 @@ export class TweetsController {
 
   @Get(':id')
   findOne(@Param('id') id: string, @Req() req: Request){
-    
+    if(isNaN(Number(id)))throw new HttpException('Invalid tweet ID', HttpStatus.BAD_REQUEST);
+
+    return this.tweetsService.findOne(parseInt(id), req.user?.slug as string);
   }
 
   @Post(':id/like')
