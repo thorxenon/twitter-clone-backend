@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, UseInterceptors, HttpException, HttpStatus, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, UseInterceptors, HttpException, HttpStatus, UploadedFile, HttpCode } from '@nestjs/common';
 import { TweetsService } from './tweets.service';
 import { CreateTweetDto } from './dto/create-tweet.dto';
 import { CreateReplyTweetDto } from './dto/create-reply.dto';
@@ -12,11 +12,15 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { join } from 'path';
 import { existsSync, mkdirSync } from 'fs';
+import { LikesService } from 'src/likes/likes.service';
 
 @Controller('tweets')
 @UseGuards(AuthGuard(), PermissionGuard)
 export class TweetsController {
-  constructor(private readonly tweetsService: TweetsService) {}
+  constructor(
+    private readonly tweetsService: TweetsService,
+    private readonly likesService: LikesService
+  ) {}
 
   @Post()
   @UseInterceptors(FileInterceptor('image',{
@@ -51,29 +55,40 @@ export class TweetsController {
         callback(null, true);
       }
     }))
-  create(@Body() createTweetDto: CreateTweetDto, @UploadedFile() image: Express.Multer.File, @Req() req: Request) {
+  async create(@Body() createTweetDto: CreateTweetDto, @UploadedFile() image: Express.Multer.File, @Req() req: Request) {
     if(image){
       createTweetDto.image = `uploads/tweet-images/${image.filename}`;
     }
 
-    return this.tweetsService.create(createTweetDto, req.user?.slug as string);
+    return await this.tweetsService.create(createTweetDto, req.user?.slug as string);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string, @Req() req: Request){
+  async findOne(@Param('id') id: string, @Req() req: Request){
     if(isNaN(Number(id)))throw new HttpException('Invalid tweet ID', HttpStatus.BAD_REQUEST);
 
-    return this.tweetsService.findOne(parseInt(id), req.user?.slug as string);
+    return await this.tweetsService.findOne(parseInt(id), req.user?.slug as string);
   }
 
   @Post(':id/like')
-  likeTweet(@Param('id') id: string, @Body() createLikeDto: CreateLikeDto){
-    
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async likeTweet(@Param('id') id: string, @Req() req: Request) {
+    if(isNaN(Number(id)))throw new HttpException('Invalid tweet ID', HttpStatus.BAD_REQUEST);
+
+    const isLiked = await this.likesService.verifyWhetherTweetIsLikedByUser(parseInt(id), req.user?.slug as string);
+
+    if(isLiked){
+      return await this.likesService.unlikeTweet(parseInt(id), req.user?.slug as string);
+    }
+
+    return await this.likesService.likeTweet(parseInt(id), req.user?.slug as string);
   }
 
   @Get(':id/answers')
-  getAnswersFromTweet(@Param('id') id: string){
+  async getAnswersFromTweet(@Param('id') id: string){
+    if(isNaN(Number(id))) throw new HttpException('Invalid tweet ID', HttpStatus.BAD_REQUEST);
 
+    return await this.tweetsService.getAnswersFromTweet(parseInt(id));
   }
 
   @Patch(':id')

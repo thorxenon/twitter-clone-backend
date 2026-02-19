@@ -7,6 +7,7 @@ import { DeepPartial, Repository } from 'typeorm';
 import { Trend } from 'src/trends/entities/trend.entity';
 import { TrendsService } from 'src/trends/trends.service';
 import { LikesService } from 'src/likes/likes.service';
+import { getUrl } from 'src/utils/url';
 
 @Injectable()
 export class TweetsService {
@@ -71,6 +72,42 @@ export class TweetsService {
       throw new HttpException(`Error creating tweet: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+
+  async getAnswersFromTweet(id: number){
+    try {
+      const answers = await this.tweetRepository.find({
+        where: { 
+          replyToId: id
+         },
+         relations: [ 'user', 'likes' ],
+         select:{
+          id: true,
+          body: true,
+          image: true,
+          createdAt: true,
+          user:{
+            slug: true,
+            name: true,
+            avatar: true
+          },
+          likes:{
+            userSlug: true
+          }
+         }
+      });
+
+      for(let i = 0; i < answers.length; i++){
+        answers[i].user.avatar = getUrl(answers[i].user.avatar);
+      }
+
+      return answers;
+    } catch (error) {
+      throw new HttpException(`Error fetching answers: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  
 
   findAll() {
     return `This action returns all tweets`;

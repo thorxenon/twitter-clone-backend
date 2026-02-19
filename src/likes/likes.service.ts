@@ -34,24 +34,41 @@ export class LikesService {
   }
 
 
+  async verifyWhetherTweetIsLikedByUser(id: number, userSlug: string): Promise<boolean>{
+    try{
+      const isliked = await this.likeRepository.findOne({ 
+        where:{
+          userSlug: userSlug,
+          tweetId: id
+        }});
 
-  create(createLikeDto: CreateLikeDto) {
-    return 'This action adds a new like';
+      return isliked ? !!isliked : false;
+    }catch(error){
+      throw new HttpException('Error verifying like status', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
-  findAll() {
-    return `This action returns all likes`;
+  async unlikeTweet(tweetId: number, userSlug: string): Promise<void>{
+    try{
+      await this.likeRepository.delete({
+        tweetId,
+        userSlug
+      });
+    }catch(error){
+      throw new HttpException('Error unliking tweet', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} like`;
-  }
-
-  update(id: number, updateLikeDto: UpdateLikeDto) {
-    return `This action updates a #${id} like`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} like`;
+  async likeTweet(id: number, userSlug: string): Promise<void> {
+    try{
+      const newLike = this.likeRepository.create({
+        userSlug,
+        tweetId: id
+      });
+      
+      await this.likeRepository.save(newLike);
+    }catch(error){
+      throw new HttpException('Error liking tweet: ' + error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }

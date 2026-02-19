@@ -9,6 +9,6 @@ async function bootstrap() {
     forbidNonWhitelisted: true,
     transform: true,
   }));
-  await app.listen(process.env.PORT as string);
+  await app.listen(process.env.PORT as string, process.env.HOST as string);
 }
 bootstrap();

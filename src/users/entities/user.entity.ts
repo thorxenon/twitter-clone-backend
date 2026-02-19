@@ -19,7 +19,7 @@ export class User {
     @OneToMany(() => Tweet, (tweet) => tweet.user)
     tweets: Tweet[];
 
-    @Column({ type: 'varchar', length: 255, default: '/uploads/user/images/default.png' })
+    @Column({ type: 'varchar', length: 255, default: '/uploads/user-avatar/default.png' })
     avatar: string;
 
     @ManyToOne(() => Role, (role) => role.id)
