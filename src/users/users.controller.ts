@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, HttpException, HttpStatus, Req, HttpCode } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { TweetsService } from 'src/tweets/tweets.service';
+import { Request } from 'express';
 
 @Controller('users')
 export class UsersController {
@@ -30,10 +31,28 @@ export class UsersController {
   }
 
   @Post(':slug/follow')
-  followUser(@Param('slug') slug: string) {
+  @HttpCode(HttpStatus.OK)
+  async followUser(@Param('slug') slug: string, @Req() req: Request) {
+    const me = req.user?.slug as string;
 
+    const isFollowing = await this.usersService.findUserBySlug(slug);
+    if(!isFollowing) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+
+    const follows = await this.usersService.checkWhetherUserIsFollowing(me, slug);
+    if(!follows){
+      await this.usersService.follow(me, slug);
+
+      return{
+        following: true
+      }
+    }
+
+    await this.usersService.unfollow(me, slug);
+    return{
+      following: false
+    }
   }
-
+;
   @Patch(':slug')
   update(@Param('slug') slug: string, @Body() updateUserDto: UpdateUserDto) {
 

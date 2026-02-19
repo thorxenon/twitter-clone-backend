@@ -70,6 +70,39 @@ export class UsersService {
     }
   }
 
+  async checkWhetherUserIsFollowing(followerSlug: string, followingSlug: string): Promise<boolean | null>{
+    try{
+      const follow = await this.followRepository.findOne({ where: { follower: { slug: followerSlug }, following: { slug: followingSlug } } });
+      if(!follow) return null;
+
+      return !!follow;
+    }catch(error){
+      throw new HttpException("Error checking if user is following", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async follow(followerSlug: string, followingSlug: string): Promise<void>{
+    try{
+      const follow = this.followRepository.create({
+        follower_slug: { slug: followerSlug } as any,
+        following_slug: followingSlug
+      });
+
+      await this.followRepository.save(follow);
+
+    }catch(error){
+      throw new HttpException("Error following user", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async unfollow(followerSlug: string, followingSlug: string): Promise<void>{
+    try{
+      await this.followRepository.delete({ follower_slug: followerSlug, following_slug: followingSlug });
+    }catch(error){
+      throw new HttpException("Error unfollowing user", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   findOne(id: number) {
     return `This action returns a #${id} user`;
   }

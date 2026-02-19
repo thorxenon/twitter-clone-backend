@@ -11,14 +11,14 @@ export class Follow{
     follower: User;
 
     @Column({ name: 'follower' })
-    follower_id: string;
+    follower_slug: string;
 
     @JoinColumn({ name: 'following' })
     @ManyToOne(() => User, (user) => user.slug, { onDelete: 'CASCADE' })
     following: User;
 
     @Column({ name: 'following' })
-    following_id: string;
+    following_slug: string;
 
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;
