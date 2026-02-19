@@ -1,12 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, HttpCode, UseInterceptors, HttpException, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, HttpCode, UseInterceptors, HttpException, UploadedFile, UploadedFiles } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from 'src/users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { SignUpDto } from './dto/signup.dto';
-import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { join } from 'node:path';
 import { mkdirSync, existsSync } from 'node:fs';
+import { randomUUID } from 'node:crypto';
 
 @Controller('auth')
 export class AuthController {
@@ -22,26 +23,43 @@ export class AuthController {
   }
 
   @Post('signup')
-  @UseInterceptors(FileInterceptor('avatar',{
+  @UseInterceptors(FileFieldsInterceptor([
+      {
+        name: 'avatar', maxCount: 1
+      },
+      {
+        name: 'cover', maxCount: 1
+      }
+    ],{
     storage: diskStorage({
-      destination: (req, folder, callback) =>{
-        const uploadDir = join(process.cwd(), 'public/uploads/user-avatar');
-        mkdirSync(uploadDir, { recursive: true });
-        callback(null, uploadDir);
+      destination: (req, file, callback) =>{
+        if(file.fieldname === 'avatar'){
+          const uploadAvatarDir = join(process.cwd(), 'public/uploads/user-avatar');
+          mkdirSync(uploadAvatarDir, { recursive: true });
+          return callback(null, uploadAvatarDir);
+        }
+        
+        const uploadCoverDir = join(process.cwd(), 'public/uploads/user-cover');
+        mkdirSync(uploadCoverDir, { recursive: true });
+        callback(null, uploadCoverDir);
       },
       filename: (req, file, callback)=>{
         try{
-          const uniqueSuffixNumber = Date.now() + '-' + Math.round(Math.random() * 1E9);
-          const unixSuffixString = Math.floor(Math.random() * 9999999).toString();
-          const fileExtension = file.originalname.split('.').pop();
-          const uniqueFilename = `${uniqueSuffixNumber}-${unixSuffixString}.${fileExtension}`;
+          const fileExtension = file.originalname.split('.').pop() || 'bin';
 
-          // Verifica se o arquivo já existe
-          if(existsSync(join(process.cwd(), 'public/uploads/user-avatar', uniqueFilename))){
-            return callback(new Error('File with the same name already exists!'), '');
+          for(let attempt = 0; attempt < 5; attempt++){
+            const uniqueFilename = `${randomUUID()}.${fileExtension}`;
+            if(
+              existsSync(join(process.cwd(), 'public/uploads/user-avatar', uniqueFilename)) ||
+              existsSync(join(process.cwd(), 'public/uploads/user-cover', uniqueFilename
+            ))){
+              continue;
+            }
+
+            return callback(null, uniqueFilename);
           }
 
-          callback(null, uniqueFilename);
+          return callback(new Error('Could not generate a unique filename after multiple attempts'), '');
         }catch(error){
           throw new HttpException('Error processing file upload', HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -55,9 +73,13 @@ export class AuthController {
     }
   }))
   @HttpCode(HttpStatus.CREATED)
-  async signup(@Body() createUserDto: SignUpDto, @UploadedFile() avatar?: Express.Multer.File) {
-    if(avatar){
-      createUserDto.avatar = `/uploads/user-avatar/${avatar.filename}`;
+  async signup(@Body() createUserDto: SignUpDto, @UploadedFiles() files?: { avatar?: Express.Multer.File[], cover?: Express.Multer.File[] }) {
+    if(files?.avatar){
+      createUserDto.avatar = `/uploads/user-avatar/${files?.avatar[0].filename}`;
+    }
+
+    if(files?.cover){
+      createUserDto.cover = `/uploads/user-cover/${files.cover[0].filename}`;
     }
     
     return await this.authService.signup(createUserDto);

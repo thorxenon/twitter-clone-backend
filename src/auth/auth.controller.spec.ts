@@ -50,7 +50,7 @@ describe('AuthController', () => {
     expect(result).toEqual(expected);
   });
 
-  it('POST /signup without avatar', async () => {
+  it('POST /signup Neither avatar and cover', async () => {
     const signupDto: Partial<SignUpDto> = {
       name: chance.name(),
       email: chance.email(),
@@ -73,16 +73,39 @@ describe('AuthController', () => {
       password: chance.string({ length: 10 }),
       slug: chance.string({ length: 10, pool: 'abcdefghijklmno_pqrstuvwxyz0123456789' }),
     };
-    const avatar = { filename: 'avatar-test.png' } as Express.Multer.File;
+
+    const avatar = [ { filename: 'avatar-test.png' } ] as Express.Multer.File[];
 
     const expected = { id: chance.guid(), avatar: '/uploads/user-avatar/avatar-test.png' };
     (authService.signup as jest.Mock).mockResolvedValue(expected);
 
-    const result = await controller.signup(signupDto as SignUpDto, avatar);
+    const result = await controller.signup(signupDto as SignUpDto, avatar[0].filename ? { avatar } : undefined);
 
     expect(authService.signup).toHaveBeenCalledWith({
       ...signupDto,
       avatar: '/uploads/user-avatar/avatar-test.png',
+    });
+    expect(result).toEqual(expected);
+  });
+
+  it('POST /signup with cover', async () => {
+    const signupDto: Partial<SignUpDto> = {
+      name: chance.name(),
+      email: chance.email(),
+      password: chance.string({ length: 10 }),
+      slug: chance.string({ length: 10, pool: 'abcdefghijklmno_pqrstuvwxyz0123456789' }),
+    };
+
+    const cover = [ { filename: 'cover-test.png' } ] as Express.Multer.File[];
+
+    const expected = { id: chance.guid(), cover: '/uploads/user-cover/cover-test.png' };
+    (authService.signup as jest.Mock).mockResolvedValue(expected);
+
+    const result = await controller.signup(signupDto as SignUpDto, cover[0].filename ? { cover } : undefined);
+
+    expect(authService.signup).toHaveBeenCalledWith({
+      ...signupDto,
+      cover: '/uploads/user-cover/cover-test.png',
     });
     expect(result).toEqual(expected);
   });

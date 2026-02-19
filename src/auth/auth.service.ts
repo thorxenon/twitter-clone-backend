@@ -10,6 +10,7 @@ import slug from 'slug';
 import { UsersService } from 'src/users/users.service';
 import { create } from 'node:domain';
 import { Role } from './entities/role.entity';
+import { getUrl } from 'src/utils/url';
 
 @Injectable()
 export class AuthService {
@@ -55,6 +56,14 @@ export class AuthService {
                 secret: this.configService.get<string>('JWT_SECRET'),
                 expiresIn: '14d'
             });
+
+            if(createUserDto.avatar){
+                newUser.avatar = getUrl(createUserDto.avatar);
+            }
+
+            if(createUserDto.cover){
+                newUser.cover = getUrl(createUserDto.cover);
+            }
 
             await this.userRepository.save(newUser);
             return {

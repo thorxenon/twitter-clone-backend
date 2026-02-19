@@ -21,6 +21,10 @@ export class SignUpDto{
 
     @IsString()
     @IsOptional()
+    cover?: string;
+
+    @IsString()
+    @IsOptional()
     bio?: string;
 
     @IsString()
