@@ -33,6 +33,14 @@ describe('TrendsService', () => {
     jest.clearAllMocks();
   });
 
+  it('createTrendFromNewTweet should create a new trend if it does not exist', async () => {
+    trendRepositoryMock.find.mockResolvedValue([]);
+    trendRepositoryMock.create.mockReturnValue([{ hashtag: '#newtrend', count: 1 }]);
+    trendRepositoryMock.save.mockResolvedValue([{ id: 1, hashtag: '#newtrend', count: 1 }]);
+    const result = await service.createTrendFromNewTweet([ { hashtag: '#newtrend', count: 1 } ]);
+    expect(result).toEqual( { created: 1, updated: 0 } );
+  });
+
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
