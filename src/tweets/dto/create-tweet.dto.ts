@@ -11,9 +11,9 @@ export class CreateTweetDto {
     
     @IsOptional()
     @IsNumber()
-    replyToId: number;
+    replyToId?: number;
     
     @IsOptional()
     @IsNumber()
-    quotedTweetId: number;
+    quotedTweetId?: number;
 }

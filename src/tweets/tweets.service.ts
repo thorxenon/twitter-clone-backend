@@ -44,13 +44,18 @@ export class TweetsService {
         createTweetDto.quotedTweetId = hasQuotedTweet.id;
       }
 
-      const newTweet: DeepPartial<Tweet> = this.tweetRepository.create({
-        userSlug: slug,
-        body: createTweetDto.body,
-        image: createTweetDto.image ?? undefined,
-        replyToId: createTweetDto.replyToId ?? null,
-        quotedTweetId: createTweetDto.quotedTweetId ?? null
-      });
+      const newTweet = this.tweetRepository.create();
+      newTweet.userSlug = slug;
+      newTweet.body = createTweetDto.body;
+      if(createTweetDto.image){
+        newTweet.image = createTweetDto.image;
+      }
+      if(createTweetDto.replyToId !== undefined){
+        newTweet.replyToId = createTweetDto.replyToId;
+      }
+      if(createTweetDto.quotedTweetId !== undefined){
+        newTweet.quotedTweetId = createTweetDto.quotedTweetId;
+      }
       await this.tweetRepository.save(newTweet);
 
       const hashtags = createTweetDto.body.match(/#[\p{L}\p{N}_]+/gu);
