@@ -107,6 +107,14 @@ export class TweetsService {
     }
   }
 
+  async getTweetCountByUserSlug(slug: string): Promise<number>{
+    try{
+      return await this.tweetRepository.count({ where: { userSlug: slug } });
+    }catch(error){
+      throw new HttpException(`Error fetching tweet count: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   
 
   findAll() {

@@ -25,6 +25,10 @@ import { DatabaseModule } from './database/database.module';
         rootPath: join('public/uploads/user-avatar'),
         serveRoot: '/uploads/user-avatar',
       },
+      {
+        rootPath: join('public/uploads/user-cover'),
+        serveRoot: '/uploads/user-cover',
+      }
     ),
     ConfigModule.forRoot({
       isGlobal: true,

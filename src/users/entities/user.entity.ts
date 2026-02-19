@@ -3,6 +3,7 @@ import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, 
 import * as bcrypt from 'bcrypt';
 import { Tweet } from "src/tweets/entities/tweet.entity";
 import { Like } from "src/likes/entities/like.entity";
+import { Follow } from "./follow.entity";
 
 
 @Entity({ name: 'users' })
@@ -22,9 +23,18 @@ export class User {
     @Column({ type: 'varchar', length: 255, default: '/uploads/user-avatar/default.png' })
     avatar: string;
 
+    @Column({ type: 'varchar', length: 255, default: '/uploads/user-cover/cover.jpg' })
+    cover: string;
+
     @ManyToOne(() => Role, (role) => role.id)
     @JoinColumn({ name: 'role' })
     role: Role;
+
+    @OneToMany(() => Follow, (follow) => follow.follower)
+    followers: Follow[];
+
+    @OneToMany(() => Follow, (follow) => follow.following)
+    following: Follow[];
 
     @Column({ name: 'role' })
     role_id: number;

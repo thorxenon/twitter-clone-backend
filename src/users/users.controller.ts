@@ -13,8 +13,8 @@ export class UsersController {
   }
 
   @Get(':nickname')
-  findOne(@Param('nickname') nickname: string) {
-
+  async findOne(@Param('nickname') nickname: string) {
+    return await this.usersService.findUserBySlug(nickname);
   }
 
   @Get(':nickname/tweets')

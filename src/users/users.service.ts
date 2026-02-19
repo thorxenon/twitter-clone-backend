@@ -7,14 +7,18 @@ import { User } from './entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
+import { getUrl } from 'src/utils/url';
+import { Follow } from './entities/follow.entity';
+import { TweetsService } from 'src/tweets/tweets.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    private readonly jwtService: JwtService,
-    private readonly configService: ConfigService
+    @InjectRepository(Follow)
+    private readonly followRepository: Repository<Follow>,
+    private readonly tweetService: TweetsService
   ){}
 
 
@@ -28,8 +32,35 @@ export class UsersService {
 
   async findUserBySlug(slug: string): Promise<User | null>{
     try{
-      const user = await this.userRepository.findOne({ where: { slug } });
+      const user = await this.userRepository.findOne({ where: { slug },
+        relations: ['tweets', 'likes', 'role'],
+        select:{
+          slug: true,
+          avatar: true,
+          role:{
+            name: true
+          },
+          cover: true,
+          bio: true,
+          link: true,
+          name: true,
+          birth_date: true,
+          createdAt: true,
+        }
+      });
       if(user){
+        user.avatar = getUrl(user.avatar);
+        user.cover = getUrl(user.cover);
+
+        const followers = await this.followRepository.count({ where: { following: { slug: user.slug } } });
+        const following = await this.followRepository.count({ where: { follower: { slug: user.slug } } });
+
+        (user as any).followers = followers;
+        (user as any).following = following;
+
+        const tweetCount = await this.tweetService.getTweetCountByUserSlug(user.slug);
+        (user as any).post_count = tweetCount;
+
         return user;
       }
 

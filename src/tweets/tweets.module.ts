@@ -17,6 +17,7 @@ import { LikesService } from 'src/likes/likes.service';
     PassportModule.register({ defaultStrategy: 'jwt' }),
   ],
   controllers: [TweetsController],
+  exports: [ TweetsService ],
   providers: [ TweetsService, TrendsService, LikesService ],
 })
 export class TweetsModule {}
