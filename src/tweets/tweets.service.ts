@@ -135,6 +135,43 @@ export class TweetsService {
     return { ...tweet, isLikedByUser , likeCount };
   }
 
+  async findUserTweets(slug: string, currentPage: number, perPage: number = 20){
+    try{
+      const tweets = await this.tweetRepository.find({
+        where:{
+          userSlug: slug,
+          replyToId: undefined,
+          quotedTweetId: undefined
+        },
+        order: {
+          createdAt: 'DESC'
+        },
+        skip: currentPage * perPage,
+        take: perPage,
+        relations: ['user', 'likes'],
+        select:{
+          id: true,
+          body: true,
+          image: true,
+          createdAt: true,
+          likes:{
+            userSlug: true
+          },
+          replies:{
+            id: true,
+            body: true,
+            image: true,
+            createdAt: true,
+          },
+        }
+      });
+
+      return tweets;
+    }catch(error){
+      throw new HttpException(`Error fetching user tweets: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   update(id: number, updateTweetDto: UpdateTweetDto) {
     return `This action updates a #${id} tweet`;
   }
