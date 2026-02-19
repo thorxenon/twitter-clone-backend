@@ -129,6 +129,17 @@ describe('TweetsService', () => {
     expect(result).toEqual({ ...expectedTweet, isLikedByUser: true, likeCount: 3 });
   });
 
+  it('should user tweets' , async() =>{
+    tweetRepositoryMock.findOne.mockResolvedValue({ id: 1, body: 'This is a test tweet #test', userSlug: 'test-user' } as any);
+    trendsServiceMock.createTrendFromNewTweet.mockResolvedValue({ created: 1, updated: 0 });
+    const createTweetDto: CreateTweetDto = { body: 'This is a test tweet #test' };
+    const result = await service.create(createTweetDto, 'test-user');
+    expect(tweetRepositoryMock.create).toHaveBeenCalledWith();
+    expect(tweetRepositoryMock.save).toHaveBeenCalledWith({ id: 1, body: 'This is a test tweet #test', userSlug: 'test-user' });
+    expect(trendsServiceMock.createTrendFromNewTweet).toHaveBeenCalledWith([{ hashtag: '#test' }]);
+    expect(result).toEqual({ id: 1, body: 'This is a test tweet #test', userSlug: 'test-user' });
+  })
+
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
