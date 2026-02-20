@@ -3,13 +3,12 @@ import { CreateTweetDto } from './dto/create-tweet.dto';
 import { UpdateTweetDto } from './dto/update-tweet.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Tweet } from './entities/tweet.entity';
-import { DeepPartial, Repository } from 'typeorm';
+import { DeepPartial, In, IsNull, Raw, Repository } from 'typeorm';
 import { Trend } from 'src/trends/entities/trend.entity';
 import { TrendsService } from 'src/trends/trends.service';
 import { LikesService } from 'src/likes/likes.service';
 import { getUrl } from 'src/utils/url';
 import { Follow } from 'src/users/entities/follow.entity';
-import { In } from 'typeorm';
 
 @Injectable()
 export class TweetsService {
@@ -142,8 +141,8 @@ export class TweetsService {
       const tweets = await this.tweetRepository.find({
         where:{
           userSlug: slug,
-          replyToId: undefined,
-          quotedTweetId: undefined
+          replyToId: IsNull(),
+          quotedTweetId: IsNull()
         },
         order: {
           createdAt: 'DESC'
@@ -212,6 +211,56 @@ export class TweetsService {
       return tweets;
     } catch (error) {
       throw new HttpException(`Error fetching tweet feed: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async findTweetByBody(query: string, currentPage: number, perPage: number): Promise<Partial<Tweet[]>>{
+    try {
+      if(!query) return [];
+
+      const search = await this.tweetRepository.find({
+        where:{
+          body: Raw(
+            (alias) =>
+              `translate(lower(${alias}), 'áàãâäéèêëíìîïóòõôöúùûüçñ', 'aaaaaeeeeiiiiooooouuuucn') LIKE translate(lower(:query), 'áàãâäéèêëíìîïóòõôöúùûüçñ', 'aaaaaeeeeiiiiooooouuuucn')`,
+            { query: `%${query}%` }
+          ),
+          replyToId: IsNull(),
+          quotedTweetId: IsNull()
+        },
+        order:{
+          createdAt: 'DESC'
+        },
+        skip: currentPage * perPage,
+        take: perPage,
+        relations: ['user', 'likes'],
+        select:{
+          id: true,
+          body: true,
+          image: true,
+          createdAt: true,
+          user:{
+            slug: true,
+            name: true,
+            avatar: true
+          },
+          likes:{
+            userSlug: true
+          }
+        },
+        cache: 60000
+      });
+      if(!search) return [];
+
+      search.map(tweet=>{
+        if(tweet.user.avatar){
+          tweet.user.avatar = getUrl(tweet.user.avatar);
+        }
+      });
+
+      return search;
+    } catch (error) {
+      throw new HttpException(`Error searching tweets: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 

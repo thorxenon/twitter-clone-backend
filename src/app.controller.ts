@@ -4,6 +4,7 @@ import { FeedDto } from './dto/feed.dto';
 import { Request } from 'express';
 import { UsersService } from './users/users.service';
 import { TweetsService } from './tweets/tweets.service';
+import { SearchDto } from './dto/search.dto';
 
 @Controller()
 export class AppController {
@@ -41,8 +42,18 @@ export class AppController {
   }
 
   @Get('search')
-  search(){
+  async search(@Query() q: SearchDto, @Req() req: Request){
+    const query = q.q.trim();
+    let perPage = 5;
+    let currentPage: number;
+    
+    if(q.page && parseInt(q.page as string) > 0){
+      currentPage = parseInt(q.page as string);
+    }else{
+      currentPage = 0;
+    }
 
+    return await this.tweetsService.findTweetByBody(q.q, currentPage, perPage);
   }
 
   @Get('suggestions')
