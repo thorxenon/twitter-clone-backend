@@ -57,7 +57,8 @@ export class AppController {
   }
 
   @Get('suggestions')
-  getSuggestions(){
-    
+  async getSuggestions(@Req() req: Request){
+    if(!req.user?.slug) return;
+    return await this.usersService.getSuggestions(req.user?.slug);
   }
 }

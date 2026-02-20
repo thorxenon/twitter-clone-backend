@@ -76,7 +76,8 @@ export class AppModule implements NestModule{
       '/tweets',
       '/likes',
       '/users',
-      '/feed'
+      '/feed',
+      '/suggestions'
     );  
   }
 }

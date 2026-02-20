@@ -12,8 +12,7 @@ import { randomUUID } from 'node:crypto';
 @Controller('auth')
 export class AuthController {
   constructor(
-    private readonly authService: AuthService,
-    private readonly userService: UsersService
+    private readonly authService: AuthService
   ) {}
 
   @Post('login')

@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LoginDto } from 'src/auth/dto/login.dto';
-import { Repository } from 'typeorm';
+import { In, Not, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -129,7 +129,26 @@ export class UsersService {
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async getSuggestions(slug: string){
+    try {
+      const following = await this.getUserFollowing(slug);
+      const followingPlusMe = [ ...following, slug ];
+
+      const suggestions = await this.userRepository.createQueryBuilder('users')
+        .where('users.slug NOT IN (:...followingPlusMe)', { followingPlusMe })
+        .orderBy('RANDOM()')
+        .limit(2)
+        .cache(60000)
+        .getMany();
+
+      if(!suggestions) return [];
+
+      for(const sugIndex in suggestions){
+        suggestions[sugIndex].avatar = getUrl(suggestions[sugIndex].avatar);
+      }
+      return suggestions;
+    } catch (error) {
+      throw new HttpException("Error fetching suggestions "+error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }

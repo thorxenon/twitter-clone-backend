@@ -8,7 +8,6 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import slug from 'slug';
 import { UsersService } from 'src/users/users.service';
-import { create } from 'node:domain';
 import { Role } from './entities/role.entity';
 import { getUrl } from 'src/utils/url';
 

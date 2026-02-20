@@ -263,12 +263,4 @@ export class TweetsService {
       throw new HttpException(`Error searching tweets: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-
-  update(id: number, updateTweetDto: UpdateTweetDto) {
-    return `This action updates a #${id} tweet`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} tweet`;
-  }
 }

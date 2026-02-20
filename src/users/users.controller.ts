@@ -60,14 +60,4 @@ export class UsersController {
     return await this.usersService.update(slug, updateUserDto);
   }
 
-  @Patch(':slug/avatar')
-  updateAvatar(@Param('slug') slug: string) {
-
-  }
-
-  @Patch(':slug/cover')
-  updateCover(@Param('slug') slug: string) {
-    
-  }
-
 }

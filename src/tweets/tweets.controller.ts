@@ -91,14 +91,4 @@ export class TweetsController {
     return await this.tweetsService.getAnswersFromTweet(parseInt(id));
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTweetDto: UpdateTweetDto){
-
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string){
-
-  }
-
 }

@@ -16,19 +16,4 @@ export class TrendsController {
   async findAll() {
     return this.trendsService.getTrandins();
   }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.trendsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTrendDto: UpdateTrendDto) {
-    return this.trendsService.update(+id, updateTrendDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.trendsService.remove(+id);
-  }
 }

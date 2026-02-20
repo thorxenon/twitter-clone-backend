@@ -93,16 +93,4 @@ export class TrendsService {
       throw new HttpException('Error fetching trends: ' + error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-
-  findOne(id: number) {
-    return `This action returns a #${id} trend`;
-  }
-
-  update(id: number, updateTrendDto: UpdateTrendDto) {
-    return `This action updates a #${id} trend`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} trend`;
-  }
 }
