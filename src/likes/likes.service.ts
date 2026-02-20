@@ -30,8 +30,7 @@ export class LikesService {
       throw new HttpException('Error counting likes', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-
-
+  
   async verifyWhetherTweetIsLikedByUser(id: number, userSlug: string): Promise<boolean>{
     try{
       const isliked = await this.likeRepository.findOne({ 
