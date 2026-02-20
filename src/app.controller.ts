@@ -53,7 +53,7 @@ export class AppController {
       currentPage = 0;
     }
 
-    return await this.tweetsService.findTweetByBody(q.q, currentPage, perPage);
+    return await this.tweetsService.findTweetByBody(query, currentPage, perPage);
   }
 
   @Get('suggestions')
