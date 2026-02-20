@@ -41,6 +41,22 @@ describe('TrendsService', () => {
     expect(result).toEqual( { created: 1, updated: 0 } );
   });
 
+  it('should return the top 4 trends, ordered by count descending', async () => {
+    trendRepositoryMock.find.mockResolvedValue([
+      { id: 1, hashtag: '#trend1', count: 10 },
+      { id: 2, hashtag: '#trend2', count: 8 },
+      { id: 3, hashtag: '#trend3', count: 6 },
+      { id: 4, hashtag: '#trend4', count: 4 },
+    ]);
+    const result = await service.getTrandins();
+    expect(result).toEqual([
+      { id: 1, hashtag: '#trend1', count: 10 },
+      { id: 2, hashtag: '#trend2', count: 8 },
+      { id: 3, hashtag: '#trend3', count: 6 },
+      { id: 4, hashtag: '#trend4', count: 4 },
+    ]);
+  });
+
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
