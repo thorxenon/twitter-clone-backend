@@ -174,7 +174,7 @@ export class TweetsService {
     }
   }
 
-  async findTweetFeedByUserSlug(slug: string, following: string[], currentPage: number, perPage: number){
+  async findTweetFeedByUserSlug(slug: string, following: string[], currentPage: number, perPage: number): Promise<Partial<Tweet[]>>{
     if(following.length === 0 || !following) return [];
 
     try {
@@ -201,7 +201,8 @@ export class TweetsService {
           likes:{
             userSlug: true
           }
-         }
+         },
+         cache: 60000
       });
 
       for(let i = 0; i < tweets.length; i++){

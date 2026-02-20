@@ -20,7 +20,7 @@ export class AppController {
 
   @Get('feed')
   async getFeed(@Query() feedDto: FeedDto, @Req() req: Request){
-    let perPage = 10;
+    let perPage = 2;
     let currentPage: number;
     if(!req.user?.slug) return;
 
@@ -33,7 +33,11 @@ export class AppController {
     const following = await this.usersService.getUserFollowing(req.user?.slug);
     if(!following || following.length === 0) return [];
 
-    return await this.tweetsService.findTweetFeedByUserSlug(req.user?.slug, following, currentPage, perPage);
+    const data = await this.tweetsService.findTweetFeedByUserSlug(req.user?.slug, following, currentPage, perPage);
+    return {
+      tweets: data,
+      page: currentPage
+    };
   }
 
   @Get('search')
