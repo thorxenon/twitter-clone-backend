@@ -13,8 +13,8 @@ export class TrendsController {
   }
 
   @Get()
-  findAll() {
-    return this.trendsService.findAll();
+  async findAll() {
+    return this.trendsService.getTrandins();
   }
 
   @Get(':id')

@@ -75,8 +75,23 @@ export class TrendsService {
     }
   }
 
-  findAll() {
-    return `This action returns all trends`;
+  async getTrandins(){
+    try{
+      const trendins = await this.trendRepository.find({
+        select:{
+          hashtag: true,
+          count: true
+        },
+        order:{
+          count:'DESC'
+        },
+        take: 4
+      });
+
+      return trendins;
+    }catch(error){
+      throw new HttpException('Error fetching trends: ' + error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   findOne(id: number) {
