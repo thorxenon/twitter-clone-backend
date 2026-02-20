@@ -75,7 +75,8 @@ export class AppModule implements NestModule{
     consumer.apply(AuthMiddleware).forRoutes(
       '/tweets',
       '/likes',
-      '/users'
+      '/users',
+      '/feed'
     );  
   }
 }

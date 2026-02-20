@@ -33,13 +33,9 @@ export class UsersService {
   async findUserBySlug(slug: string): Promise<User | null>{
     try{
       const user = await this.userRepository.findOne({ where: { slug },
-        relations: ['tweets', 'likes', 'role'],
         select:{
           slug: true,
           avatar: true,
-          role:{
-            name: true
-          },
           cover: true,
           bio: true,
           link: true,
@@ -59,7 +55,7 @@ export class UsersService {
         (user as any).following = following;
 
         const tweetCount = await this.tweetService.getTweetCountByUserSlug(user.slug);
-        (user as any).post_count = tweetCount;
+        (user as any).tweetCount = tweetCount;
 
         return user;
       }
@@ -107,8 +103,37 @@ export class UsersService {
     return `This action returns a #${id} user`;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(slug: string, updateUserDto: UpdateUserDto): Promise<void> {
+    try{
+        await this.userRepository.update({ slug }, updateUserDto);
+    }catch(error){
+      throw new HttpException("Error updating user", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async getUserFollowing(slug: string): Promise<string[]>{
+    try{
+      let following: any = [];
+      const reqFollowing = await this.followRepository.find({
+        where:{
+          following: { slug }
+        },
+        select:{
+          follower: true
+        }
+      });
+      if(!reqFollowing || reqFollowing.length === 0) return [];
+
+      for(const f of reqFollowing){
+        following.push(f.following);
+      }
+
+      console.log(following);
+
+      return following;
+    }catch(error){
+      throw new HttpException("Error fetching following users", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   remove(id: number) {

@@ -17,9 +17,9 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  @Get(':nickname')
-  async findOne(@Param('nickname') nickname: string) {
-    return await this.usersService.findUserBySlug(nickname);
+  @Get(':slug')
+  async findOne(@Param('slug') slug: string) {
+    return await this.usersService.findUserBySlug(slug);
   }
 
   @Get(':slug/tweets')
@@ -51,11 +51,13 @@ export class UsersController {
     return{
       following: false
     }
-  }
-;
-  @Patch(':slug')
-  update(@Param('slug') slug: string, @Body() updateUserDto: UpdateUserDto) {
+  };
 
+  @Patch()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async update (@Body() updateUserDto: UpdateUserDto, @Req() req: Request) {
+    const slug = req.user?.slug as string;
+    return await this.usersService.update(slug, updateUserDto);
   }
 
   @Patch(':slug/avatar')

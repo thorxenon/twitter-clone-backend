@@ -8,6 +8,8 @@ import { Trend } from 'src/trends/entities/trend.entity';
 import { TrendsService } from 'src/trends/trends.service';
 import { LikesService } from 'src/likes/likes.service';
 import { getUrl } from 'src/utils/url';
+import { Follow } from 'src/users/entities/follow.entity';
+import { In } from 'typeorm';
 
 @Injectable()
 export class TweetsService {
@@ -169,6 +171,46 @@ export class TweetsService {
       return tweets;
     }catch(error){
       throw new HttpException(`Error fetching user tweets: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async findTweetFeedByUserSlug(slug: string, following: string[], currentPage: number, perPage: number){
+    if(following.length === 0 || !following) return [];
+
+    try {
+      const tweets = await this.tweetRepository.find({
+        where:{
+          userSlug: In(following)
+        },
+        order: {
+          createdAt: 'DESC'
+        },
+        skip: currentPage * perPage,
+        take: perPage,
+        relations: ['user', 'likes'],
+        select:{
+          id: true,
+          body: true,
+          image: true,
+          createdAt: true,
+          user:{
+            slug: true,
+            name: true,
+            avatar: true
+          },
+          likes:{
+            userSlug: true
+          }
+         }
+      });
+
+      for(let i = 0; i < tweets.length; i++){
+        tweets[i].user.avatar = getUrl(tweets[i].user.avatar);
+      }
+
+      return tweets;
+    } catch (error) {
+      throw new HttpException(`Error fetching tweet feed: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
