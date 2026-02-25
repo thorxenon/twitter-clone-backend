@@ -66,6 +66,35 @@ export class UsersService {
     }
   }
 
+  async LoggedUserInfo(slug: string){
+    try{
+      const user = await this.userRepository.findOne({
+        where: {
+          slug 
+        },
+        select:{
+          slug: true,
+          name: true,
+          role:{
+            name: true
+          },
+          avatar: true
+        },
+        relations:[ 'role' ]
+      });
+
+      if(user){
+        user.avatar = getUrl(user.avatar);
+        user.cover = getUrl(user.cover);
+        return user;
+      }
+
+      throw new HttpException("User not found", HttpStatus.NOT_FOUND);
+    }catch(error){
+      throw new HttpException("Error fetching user", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   async checkWhetherUserIsFollowing(followerSlug: string, followingSlug: string): Promise<boolean | null>{
     try{
       const follow = await this.followRepository.findOne({ where: { follower: { slug: followerSlug }, following: { slug: followingSlug } } });
@@ -139,6 +168,11 @@ export class UsersService {
         .orderBy('RANDOM()')
         .limit(2)
         .cache(60000)
+        .select([
+          'users.slug',
+          'users.name',
+          'users.avatar'
+        ])
         .getMany();
 
       if(!suggestions) return [];

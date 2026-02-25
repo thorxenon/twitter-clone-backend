@@ -9,6 +9,7 @@ import { TrendsService } from 'src/trends/trends.service';
 import { LikesService } from 'src/likes/likes.service';
 import { getUrl } from 'src/utils/url';
 import { Follow } from 'src/users/entities/follow.entity';
+import { GetAllTweetsDto } from './dto/get-all.dto';
 
 @Injectable()
 export class TweetsService {
@@ -115,7 +116,7 @@ export class TweetsService {
 
   async getTweetCountByUserSlug(slug: string): Promise<number>{
     try{
-      return await this.tweetRepository.count({ where: { userSlug: slug } });
+      return await this.tweetRepository.count({where: { userSlug: slug } });
     }catch(error){
       throw new HttpException(`Error fetching tweet count: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -123,8 +124,55 @@ export class TweetsService {
 
   
 
-  findAll() {
-    return `This action returns all tweets`;
+  async findAll(query: GetAllTweetsDto, userSlug: string) {
+    try{
+      const existTrend = await this.trendService.findTrend(query.hashtag as string);
+      console.log('Exist trend:', existTrend);
+      if(!existTrend) return;
+
+      const tweets = await this.tweetRepository.find({
+        where:{
+          body: Raw(
+            (alias) =>
+              `translate(lower(${alias}), 'áàãâäéèêëíìîïóòõôöúùûüçñ', 'aaaaaeeeeiiiiooooouuuucn') LIKE translate(lower(:query), 'áàãâäéèêëíìîïóòõôöúùûüçñ', 'aaaaaeeeeiiiiooooouuuucn')`,
+            { query: `%${existTrend.hashtag}%` }
+          )
+        },
+        order: {
+          createdAt: 'DESC'
+        },
+        relations: ['user', 'likes'],
+        select:{
+          id: true,
+          body: true,
+          user:{
+            slug: true,
+            name: true,
+            avatar: true
+          },
+          image: true,
+          createdAt: true,
+          likes:{
+            userSlug: true
+          },
+          replies:{
+            id: true,
+            body: true,
+            image: true,
+            createdAt: true,
+          }
+        }
+      });
+      if(!tweets) return [];
+
+      for(const tweet in tweets){
+        tweets[tweet].user.avatar = getUrl(tweets[tweet].user.avatar);
+      }
+
+      return tweets;
+    }catch(error){
+      throw new HttpException(`Error fetching tweets: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async findOne(id: number, userSlug: string) {
@@ -153,6 +201,11 @@ export class TweetsService {
         select:{
           id: true,
           body: true,
+          user:{
+            slug: true,
+            name: true,
+            avatar: true
+          },
           image: true,
           createdAt: true,
           likes:{
@@ -166,6 +219,11 @@ export class TweetsService {
           },
         }
       });
+      if(!tweets) return [];
+
+      for(let tweet in tweets){
+        tweets[tweet].user.avatar = getUrl(tweets[tweet].user.avatar);
+      }
 
       return tweets;
     }catch(error){
@@ -179,7 +237,9 @@ export class TweetsService {
     try {
       const tweets = await this.tweetRepository.find({
         where:{
-          userSlug: In(following)
+          userSlug: In(following),
+          replyToId: IsNull(),
+          quotedTweetId: IsNull()
         },
         order: {
           createdAt: 'DESC'

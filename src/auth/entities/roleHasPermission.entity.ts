@@ -1,4 +1,5 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import type { Relation } from "typeorm";
 import { Permission } from "./permission.entity";
 import { Role } from "./role.entity";
 
@@ -11,15 +12,15 @@ export class RoleHasPermission{
     roleId: number;
 
     @JoinColumn({ name: 'role' })
-    @ManyToOne(() => Role, (role) => role.id, { nullable: false })
-    role: Role;
+    @ManyToOne(() => Role, (role) => role.roleHasPermissions, { nullable: false })
+    role: Relation<Role>;
 
     @Column({ name: 'permission' })
     permissionId: number;
 
     @JoinColumn({ name: 'permission' })
-    @ManyToOne(() => Permission, (permission) => permission.id, { nullable: false})
-    permission: Permission;
+    @ManyToOne(() => Permission, (permission) => permission.roleHasPermissions, { nullable: false})
+    permission: Relation<Permission>;
 
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;

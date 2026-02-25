@@ -1,7 +1,7 @@
-import { Controller, Get, Query, Req } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, Query, Req } from '@nestjs/common';
 import { AppService } from './app.service';
 import { FeedDto } from './dto/feed.dto';
-import { Request } from 'express';
+import type { Request } from 'express';
 import { UsersService } from './users/users.service';
 import { TweetsService } from './tweets/tweets.service';
 import { SearchDto } from './dto/search.dto';
@@ -20,8 +20,9 @@ export class AppController {
   }
 
   @Get('feed')
+  @HttpCode(HttpStatus.OK)
   async getFeed(@Query() feedDto: FeedDto, @Req() req: Request){
-    let perPage = 2;
+    let perPage = 5;
     let currentPage: number;
     if(!req.user?.slug) return;
 

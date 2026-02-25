@@ -1,7 +1,7 @@
 import { HttpException, Injectable, NestMiddleware } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request } from "express";
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware{

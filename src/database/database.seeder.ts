@@ -23,7 +23,7 @@ export class DatabaseSeeder{
                 throw new Error("Role not found. Please seed roles first.");
             }
 
-            const newUserAdmin: DeepPartial<User> = this.userRepository.create({
+            const newUserAdmin = this.userRepository.create({
                 slug: process.env.ADMIN_NICKNAME as string,
                 name: process.env.ADMIN_FULL_NAME as string,
                 email: process.env.ADMIN_EMAIL as string,
@@ -32,7 +32,7 @@ export class DatabaseSeeder{
                 birth_date: new Date(process.env.ADMIN_BIRTH_DATE as string)
             });
 
-            const defaultUserAdmin: DeepPartial<User> = this.userRepository.create({
+            const defaultUserAdmin = this.userRepository.create({
                 slug: 'testuser',
                 name: 'Test User',
                 email: 'testuser@example.com',

@@ -11,6 +11,7 @@ export class TrendsController {
     return this.trendsService.create(createTrendDto);
   }
 
+
   @Get()
   async findAll() {
     return this.trendsService.getTrandins();

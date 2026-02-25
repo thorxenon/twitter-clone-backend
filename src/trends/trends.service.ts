@@ -74,6 +74,17 @@ export class TrendsService {
       throw new HttpException('Error creating trend: ' + error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+  
+  async findTrend(hashtag: string){
+    try{
+      if(!hashtag.startsWith('#')){
+        hashtag = '#' + hashtag;
+      }
+      return await this.trendRepository.findOne({ where: { hashtag: hashtag.toLowerCase() } });
+    }catch(error){
+      throw new HttpException('Error finding trend: ' + error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 
   async getTrandins(){
     try{

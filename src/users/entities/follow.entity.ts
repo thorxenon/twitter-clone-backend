@@ -1,4 +1,5 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import type { Relation } from "typeorm";
 import { User } from "./user.entity";
 
 @Entity({ name: 'follows' })
@@ -8,14 +9,14 @@ export class Follow{
 
     @JoinColumn({ name: 'follower' })
     @ManyToOne(() => User, (user) => user.slug, { onDelete: 'CASCADE' })
-    follower: User;
+    follower: Relation<User>;
 
     @Column({ name: 'follower' })
     follower_slug: string;
 
     @JoinColumn({ name: 'following' })
     @ManyToOne(() => User, (user) => user.slug, { onDelete: 'CASCADE' })
-    following: User;
+    following: Relation<User>;
 
     @Column({ name: 'following' })
     following_slug: string;

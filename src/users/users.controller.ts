@@ -1,11 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, HttpException, HttpStatus, Req, HttpCode } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, HttpException, HttpStatus, Req, HttpCode, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { TweetsService } from 'src/tweets/tweets.service';
-import { Request } from 'express';
+import type { Request } from 'express';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
+@UseGuards(AuthGuard())
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
@@ -17,12 +19,25 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
+  @Get('me')
+  @HttpCode(HttpStatus.OK)
+  async loggedUserInfo(@Req() req: Request) {
+    const slug = req.user?.slug as string;
+    if (!slug) {
+      throw new HttpException('User slug not found in token', HttpStatus.UNAUTHORIZED);
+    }
+    return await this.usersService.LoggedUserInfo(slug);
+  }
+
   @Get(':slug')
   async findOne(@Param('slug') slug: string) {
     return await this.usersService.findUserBySlug(slug);
   }
 
+  
+
   @Get(':slug/tweets')
+  @HttpCode(HttpStatus.OK)
   async findUserTweets(@Param('slug') slug: string, @Query('page') page?: number) {
     if(page && isNaN(Number(page))) throw new HttpException('Invalid page number', HttpStatus.BAD_REQUEST);
     let currentPage = page ? Number(page) : 0;

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, UseInterceptors, HttpException, HttpStatus, UploadedFile, HttpCode } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, UseInterceptors, HttpException, HttpStatus, UploadedFile, HttpCode, Query } from '@nestjs/common';
 import { TweetsService } from './tweets.service';
 import { CreateTweetDto } from './dto/create-tweet.dto';
 import { CreateReplyTweetDto } from './dto/create-reply.dto';
@@ -7,12 +7,13 @@ import { PermissionGuard } from 'src/guards/permission.guard';
 import { RequiredPermission } from 'src/decorators/permission.decorator';
 import { UpdateTweetDto } from './dto/update-tweet.dto';
 import { CreateLikeDto } from 'src/likes/dto/create-like.dto';
-import { Request } from 'express';
+import type { Request } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { join } from 'path';
 import { existsSync, mkdirSync } from 'fs';
 import { LikesService } from 'src/likes/likes.service';
+import { GetAllTweetsDto } from './dto/get-all.dto';
 
 @Controller('tweets')
 @UseGuards(AuthGuard(), PermissionGuard)
@@ -61,6 +62,12 @@ export class TweetsController {
     }
 
     return await this.tweetsService.create(createTweetDto, req.user?.slug as string);
+  }
+
+  @Get()
+  async findAll(@Query() query: GetAllTweetsDto, @Req() req: Request) {
+    console.log('Received query parameters:', query);
+    return await this.tweetsService.findAll(query, req.user?.slug as string);
   }
 
   @Get(':id')

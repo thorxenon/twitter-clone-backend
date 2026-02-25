@@ -1,4 +1,4 @@
-import { User } from "src/users/entities/user.entity";
+import { User } from "../../users/entities/user.entity";
 import {
   Column,
   CreateDateColumn,
@@ -6,9 +6,10 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
-  PrimaryGeneratedColumn,
+  PrimaryGeneratedColumn
 } from "typeorm";
-import { Like } from "src/likes/entities/like.entity";
+import { Like } from "../../likes/entities/like.entity";
+import type { Relation } from "typeorm";
 
 @Entity({ name: "tweets" })
 export class Tweet {
@@ -17,7 +18,7 @@ export class Tweet {
 
   @ManyToOne(() => User, (user) => user.slug)
   @JoinColumn({ name: "user_slug" })
-  user: User;
+  user: Relation<User>;
 
   @Column({ name: "user_slug", type: "varchar", length: 255 })
   userSlug: string;
@@ -28,24 +29,24 @@ export class Tweet {
   // ===== REPLY (estrutura hierárquica) =====
   @ManyToOne(() => Tweet, (tweet) => tweet.replies, { nullable: true })
   @JoinColumn({ name: "reply_to_id" })
-  replyTo: Tweet;
+  replyTo: Relation<Tweet>;
 
   @Column({ name: "reply_to_id", nullable: true })
   replyToId: number;
 
   @OneToMany(() => Tweet, (tweet) => tweet.replyTo)
-  replies: Tweet[];
+  replies: Relation<Tweet[]>;
 
   // ===== QUOTE TWEET =====
   @ManyToOne(() => Tweet, { nullable: true })
   @JoinColumn({ name: "quoted_tweet_id" })
-  quotedTweet: Tweet;
+  quotedTweet: Relation<Tweet>;
 
   @Column({ name: "quoted_tweet_id", nullable: true })
   quotedTweetId: number;
 
   @OneToMany(() => Like, (like) => like.tweet)
-  likes: Like[];
+  likes: Relation<Like[]>;
 
   @Column({ name: "likes_count", default: 0 })
   likesCount: number;

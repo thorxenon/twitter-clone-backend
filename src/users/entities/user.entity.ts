@@ -1,8 +1,9 @@
-import { Role } from "src/auth/entities/role.entity";
-import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Role } from "../../auth/entities/role.entity";
+import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
+import type { Relation } from "typeorm";
 import * as bcrypt from 'bcrypt';
-import { Tweet } from "src/tweets/entities/tweet.entity";
-import { Like } from "src/likes/entities/like.entity";
+import { Tweet } from "../../tweets/entities/tweet.entity";
+import { Like } from "../../likes/entities/like.entity";
 import { Follow } from "./follow.entity";
 
 
@@ -18,7 +19,7 @@ export class User {
     password: string;
 
     @OneToMany(() => Tweet, (tweet) => tweet.user)
-    tweets: Tweet[];
+    tweets: Relation<Tweet[]>;
 
     @Column({ type: 'varchar', length: 255, default: '/uploads/user-avatar/default.png' })
     avatar: string;
@@ -28,19 +29,19 @@ export class User {
 
     @ManyToOne(() => Role, (role) => role.id)
     @JoinColumn({ name: 'role' })
-    role: Role;
+    role: Relation<Role>;
 
     @OneToMany(() => Follow, (follow) => follow.follower)
-    followers: Follow[];
+    followers: Relation<Follow[]>;
 
     @OneToMany(() => Follow, (follow) => follow.following)
-    following: Follow[];
+    following: Relation<Follow[]>;
 
     @Column({ name: 'role' })
     role_id: number;
 
     @OneToMany(() => Like, (like) => like.user)
-    likes: Like[];
+    likes: Relation<Like[]>;
 
     @Column({ type: 'text', nullable: true })
     bio: string;

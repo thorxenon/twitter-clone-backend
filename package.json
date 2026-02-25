@@ -8,8 +8,8 @@
   "scripts": {
     "build": "nest build",
     "typeorm": "typeorm -d src/database/data.source.ts",
-    "typeorm:migration:run": "npm run typeorm migration:run",
-    "typeorm:schema:drop": "npm run typeorm schema:drop",
+    "typeorm:migration:run": "bun run typeorm migration:run",
+    "typeorm:schema:drop": "bun run typeorm schema:drop",
     "migrate:fresh": "bun run typeorm:schema:drop && bun run typeorm:migration:run",
     "run:seeder": "ts-node -r  tsconfig-paths/register \"src/scripts/seed.ts\"",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
