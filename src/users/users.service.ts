@@ -144,15 +144,16 @@ export class UsersService {
     try{
       const reqFollowing = await this.followRepository.find({
         where:{
-          following_slug: slug 
+          follower_slug: slug 
         },
         select:{
-          follower_slug: true
+          following: true
         }
       });
+
       if(!reqFollowing || reqFollowing.length === 0) return [];
 
-      return reqFollowing.map(f => f.follower_slug);
+      return reqFollowing.map(f => f.following_slug);
     }catch(error){
       throw new HttpException("Error fetching following users", HttpStatus.INTERNAL_SERVER_ERROR);
     }

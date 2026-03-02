@@ -56,6 +56,8 @@ export class AuthService {
                 expiresIn: '14d'
             });
 
+            await this.userRepository.save(newUser);
+
             if(createUserDto.avatar){
                 newUser.avatar = getUrl(createUserDto.avatar);
             }
@@ -64,7 +66,6 @@ export class AuthService {
                 newUser.cover = getUrl(createUserDto.cover);
             }
 
-            await this.userRepository.save(newUser);
             return {
                 ...newUser,
                 token

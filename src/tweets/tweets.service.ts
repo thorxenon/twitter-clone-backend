@@ -216,7 +216,7 @@ export class TweetsService {
             body: true,
             image: true,
             createdAt: true,
-          },
+          }
         }
       });
       if(!tweets) return [];
@@ -235,7 +235,7 @@ export class TweetsService {
     if(following.length === 0 || !following) return [];
 
     try {
-      const tweets = await this.tweetRepository.find({
+      const tweets: any = await this.tweetRepository.find({
         where:{
           userSlug: In(following),
           replyToId: IsNull(),
@@ -246,7 +246,7 @@ export class TweetsService {
         },
         skip: currentPage * perPage,
         take: perPage,
-        relations: ['user', 'likes'],
+        relations: ['user', 'likes', 'quotedTweet', 'quotedTweet.user', 'replyTo', 'replyTo.user'],
         select:{
           id: true,
           body: true,
@@ -259,6 +259,28 @@ export class TweetsService {
           },
           likes:{
             userSlug: true
+          },
+          quotedTweet:{
+            id: true,
+            body: true,
+            image: true,
+            createdAt: true,
+            user: {
+              slug: true,
+              name: true,
+              avatar: true,
+            }
+          },
+          replyTo:{
+            id: true,
+            body: true,
+            image: true,
+            createdAt: true,
+            user: {
+              slug: true,
+              name: true,
+              avatar: true
+            }
           }
          },
          cache: 60000
@@ -266,9 +288,35 @@ export class TweetsService {
 
       for(let i = 0; i < tweets.length; i++){
         tweets[i].user.avatar = getUrl(tweets[i].user.avatar);
+        if(tweets[i].quotedTweet && tweets[i].quotedTweet.user?.avatar){
+          tweets[i].quotedTweet.user.avatar = getUrl(tweets[i].quotedTweet.user.avatar);
+        }
       }
 
-      return tweets;
+      const tweetsWithCounts = await Promise.all(
+        tweets.map(async (tweet) => {
+          const [commentsCount, retweetCount] = await Promise.all([
+            this.tweetRepository.count({ where: { replyToId: tweet.id } }),
+            this.tweetRepository.count({ where: { quotedTweetId: tweet.id } }),
+          ]);
+    
+          const isLikedByUser = tweet.likes.some(like => like.userSlug === slug);
+          const likeCount = tweet.likes.length;
+
+          return {
+            ...tweet,
+            likeCount,
+            isLikedByUser,
+            commentsCount,
+            retweetCount,
+          };
+        })
+      );
+
+      return tweetsWithCounts.map(tweet => {
+        delete tweet.likes;
+        return tweet;
+      });
     } catch (error) {
       throw new HttpException(`Error fetching tweet feed: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
