@@ -55,7 +55,7 @@ pipeline {
                 sh "kubectl apply -f k8s/database/postgres-pvc.yaml"
                 sh "kubectl apply -f k8s/database/postgres.yaml"
                 sh "kubectl apply -f k8s/database/postgres-service.yaml"
-                sh "kubectl rollout restart deployment postgres -n postgres"
+                sh "kubectl rollout restart statefulset postgres -n postgres"
             }
         }
 
