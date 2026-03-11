@@ -1,11 +1,12 @@
 import { Role } from "../../auth/entities/role.entity";
 import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
 import type { Relation } from "typeorm";
-import * as bcrypt from 'bcrypt';
+import * as argon2 from "argon2";
 import { Tweet } from "../../tweets/entities/tweet.entity";
 import { Like } from "../../likes/entities/like.entity";
 import { Follow } from "./follow.entity";
-
+// import dotenv from 'dotenv';
+// dotenv.config();
 
 @Entity({ name: 'users' })
 export class User {
@@ -60,10 +61,20 @@ export class User {
 
     @BeforeInsert()
     private async generateHash(){
-        this.password = await bcrypt.hash(this.password, 12);
+        try{
+            const hash = await argon2.hash(this.password + process.env.PEPPER ,{
+                type: argon2.argon2id,
+                memoryCost: 2 ** 16, // 64 MB
+                timeCost: 5,
+                parallelism: 4,
+            });
+            this.password = hash;
+        }catch(error){
+            throw error;
+        }
     }
 
-    async verifyPassword(password: string): Promise<boolean>{
-        return await bcrypt.compare(password, this.password);
+    async verifyPassword(password: string){
+        return await argon2.verify(this.password, password + process.env.PEPPER);
     }
 }
