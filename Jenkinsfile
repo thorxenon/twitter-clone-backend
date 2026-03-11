@@ -25,8 +25,8 @@ pipeline {
             steps {
                 //deploying nginx load balancer on kubernetes cluster
                 sh "kubectl apply -f k8s/nginx/pvc.yaml"
-                sh "kubectl apply -f k8s/nginx/nginx-deployment.yaml"
-                sh "kubectl rollout restart deployment app -n nest-app"
+                sh "kubectl apply -f k8s/nginx/nginx.yaml"
+                sh "kubectl apply -f k8s/nginx/service.yaml"
                 sh "kubectl rollout restart deployment nginx-gateway -n nginx-gateway"
             }
         }
@@ -97,9 +97,8 @@ pipeline {
                 }
                 sh "kind load docker-image thorxenon/twitter-clone-backend:latest"
                 sh "kubectl apply -f k8s/app/configmap.yaml"
-                sh "kubectl apply -f k8s/app/app-deployment.yaml"
+                sh "kubectl apply -f k8s/app/deployment.yaml"
                 sh "kubectl apply -f k8s/app/app-service.yaml"
-                sh "kubectl rollout restart deployment app -n nest-app"
             }
         }
     }
