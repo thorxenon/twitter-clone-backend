@@ -22,9 +22,26 @@ pipeline {
         }
         stage('Deploy on Kubernetes') {
             steps {
-                sh 'echo "Deploying on Kubernetes..."'
-                // Add your deploy commands here
-                sh "kubectl get nodes"
+                //deploying nginx load balancer on kubernetes cluster
+                sh "kubectl apply -f k8s/pvc.yaml"
+                sh "kubectl apply -f k8s/nginx/nginx-deployment.yaml"
+                sh "kubectl rollout restart deployment app -n nest-app"
+                sh "kubectl rollout restart deployment nginx-gateway -n nginx-gateway"
+
+                //deploying the database on kubernetes cluster
+                sh "kubectl apply -f k8s/database/secret.yaml"
+                sh "kubectl apply -f k8s/database/postgres-pvc.yaml"
+                sh "kubectl apply -f k8s/database/postgres.yaml"
+                sh "kubectl apply -f k8s/database/postgres-service.yaml"
+                sh "kubectl rollout restart deployment postgres -n postgres"
+
+                //deploying the app on kubernetes cluster
+                sh "kind load docker-image thorxenon/twitter-clone-backend:latest"
+                sh "kubectl apply -f k8s/app/configmap.yaml"
+                sh "kubectl apply -f k8s/app/secret.yaml"
+                sh "kubectl apply -f k8s/app/app-deployment.yaml"
+                sh "kubectl apply -f k8s/app/app-service.yaml"
+                sh "kubectl rollout restart deployment app -n nest-app"
             }
         }
     }
