@@ -23,7 +23,7 @@ pipeline {
         stage('Deploy on Kubernetes') {
             steps {
                 //deploying nginx load balancer on kubernetes cluster
-                sh "kubectl apply -f k8s/pvc.yaml"
+                sh "kubectl apply -f k8s/nginx/pvc.yaml"
                 sh "kubectl apply -f k8s/nginx/nginx-deployment.yaml"
                 sh "kubectl rollout restart deployment app -n nest-app"
                 sh "kubectl rollout restart deployment nginx-gateway -n nginx-gateway"
