@@ -24,6 +24,7 @@ pipeline {
             steps {
                 sh 'echo "Deploying on Kubernetes..."'
                 // Add your deploy commands here
+                sh "kubectl get nodes"
             }
         }
     }
