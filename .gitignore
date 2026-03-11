@@ -56,7 +56,6 @@ pids
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 public/*
-*.yaml
 
 # Ignore Kubernetes secret files within the k8s directory
 k8s/**/*secret*.yaml

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-configmap
+  namespace: nest-app
+data:
+  DB_NAME: twitter_clone
+  DB_HOST: "postgres-service.postgres"
+  DB_PORT: "5432"
+  PORT: "3000"

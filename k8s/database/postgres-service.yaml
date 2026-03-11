@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+  namespace: postgres
+spec:
+  # O seletor encontra os Pods que o Service deve direcionar.
+  # Ele deve corresponder às labels no template do seu postgres-replicaset.yaml
+  # clusterIP: None
+  selector:
+    app: postgres
+  
+  # A seção de portas mapeia a porta do Service para a porta do contêiner.
+  ports:
+    - protocol: TCP
+      port: 5432       # A porta que o Service expõe
+      targetPort: 5432 # A porta do contêiner (a que o Postgres está ouvindo)
