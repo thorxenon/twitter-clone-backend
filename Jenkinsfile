@@ -79,18 +79,18 @@ pipeline {
                     
                     sh '''
                         kubectl create secret generic app-secret \
-                        --from-literal=DB_PASSWORD=${DB_PASSWORD} \
+                        --from-literal=DB_PASSWORD="${DB_PASSWORD}" \
                         --from-literal=DB_USER=${DB_USER} \
                         --from-literal=DB_NAME=${DB_NAME} \
                         --from-literal=DB_HOST=${DB_HOST} \
                         --from-literal=DB_PORT=${DB_PORT} \
-                        --from-literal=PEPPER=${PEPPER} \
-                        --from-literal=JWT_SECRET=${JWT_SECRET} \
+                        --from-literal=PEPPER="${PEPPER}" \
+                        --from-literal=JWT_SECRET="${JWT_SECRET}" \
                         --from-literal=ADMIN_NICKNAME=${ADMIN_NICKNAME} \
-                        --from-literal=ADMIN_PASSWORD=${ADMIN_PASSWORD} \
-                        --from-literal=ADMIN_EMAIL=${ADMIN_EMAIL} \
+                        --from-literal=ADMIN_PASSWORD="${ADMIN_PASSWORD}" \
+                        --from-literal=ADMIN_EMAIL="${ADMIN_EMAIL}" \
                         --from-literal=ADMIN_FULL_NAME="${ADMIN_FULL_NAME}" \
-                        --from-literal=ADMIN_BIRTH_DATE=${ADMIN_BIRTH_DATE} \
+                        --from-literal=ADMIN_BIRTH_DATE="${ADMIN_BIRTH_DATE}" \
                         -n nestp-app \
                         --dry-run=client -o yaml | kubectl apply -f -
                         '''
