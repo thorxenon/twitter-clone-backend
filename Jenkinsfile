@@ -95,7 +95,6 @@ pipeline {
                         --dry-run=client -o yaml | kubectl apply -f -
                         '''
                 }
-                sh "kind load docker-image thorxenon/twitter-clone-backend:latest"
                 sh "kubectl apply -f k8s/app/configmap.yaml"
                 sh "kubectl apply -f k8s/app/deployment.yaml"
                 sh "kubectl apply -f k8s/app/app-service.yaml"
