@@ -85,7 +85,7 @@ pipeline {
                 }
 
                 sh "kubectl apply -f k8s/app/"
-                sh "kubectl rollout restart deployment nest-api -n nest-app"
+                sh "kubectl rollout restart deployment app -n nest-app"
             }
         }
 
