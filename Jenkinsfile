@@ -42,10 +42,7 @@ pipeline {
                         -n postgres --dry-run=client -o yaml | kubectl apply -f -
                         '''
                 }
-                sh "kubectl apply -f k8s/database/configmap.yaml"
-                sh "kubectl apply -f k8s/database/postgres-pvc.yaml"
-                sh "kubectl apply -f k8s/database/postgres.yaml"
-                sh "kubectl apply -f k8s/database/postgres-service.yaml"
+                sh "kubectl apply -f k8s/database/"
                 sh "kubectl rollout restart statefulset postgres -n postgres"
             }
         }
@@ -87,18 +84,15 @@ pipeline {
                         '''
                 }
 
-                sh "kubectl apply -f k8s/app/configmap.yaml"
-                sh "kubectl apply -f k8s/app/deployment.yaml"
-                sh "kubectl apply -f k8s/app/app-service.yaml"
+                sh "kubectl apply -f k8s/app/"
+                sh "kubectl rollout restart deployment nest-api -n nest-app"
             }
         }
 
         stage('Deploy Load Balancer on Kubernetes') {
             steps {
                 //deploying nginx load balancer on kubernetes cluster
-                sh "kubectl apply -f k8s/nginx/pvc.yaml"
-                sh "kubectl apply -f k8s/nginx/nginx.yaml"
-                sh "kubectl apply -f k8s/nginx/service.yaml"
+                sh "kubectl apply -f k8s/nginx/"
                 sh "kubectl rollout restart deployment nginx-gateway -n nginx-gateway"
             }
         }
