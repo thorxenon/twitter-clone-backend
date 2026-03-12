@@ -21,16 +21,6 @@ pipeline {
             }
         }
 
-        stage('Deploy Load Balancer on Kubernetes') {
-            steps {
-                //deploying nginx load balancer on kubernetes cluster
-                sh "kubectl apply -f k8s/nginx/pvc.yaml"
-                sh "kubectl apply -f k8s/nginx/nginx.yaml"
-                sh "kubectl apply -f k8s/nginx/service.yaml"
-                sh "kubectl rollout restart deployment nginx-gateway -n nginx-gateway"
-            }
-        }
-
         stage('Deploy Database on Kubernetes'){
             steps {
                 //deploying the database on kubernetes cluster
@@ -52,6 +42,7 @@ pipeline {
                         -n postgres --dry-run=client -o yaml | kubectl apply -f -
                         '''
                 }
+                sh "kubectl apply -f k8s/database/configmap.yaml"
                 sh "kubectl apply -f k8s/database/postgres-pvc.yaml"
                 sh "kubectl apply -f k8s/database/postgres.yaml"
                 sh "kubectl apply -f k8s/database/postgres-service.yaml"
@@ -95,9 +86,20 @@ pipeline {
                         --dry-run=client -o yaml | kubectl apply -f -
                         '''
                 }
+
                 sh "kubectl apply -f k8s/app/configmap.yaml"
                 sh "kubectl apply -f k8s/app/deployment.yaml"
                 sh "kubectl apply -f k8s/app/app-service.yaml"
+            }
+        }
+
+        stage('Deploy Load Balancer on Kubernetes') {
+            steps {
+                //deploying nginx load balancer on kubernetes cluster
+                sh "kubectl apply -f k8s/nginx/pvc.yaml"
+                sh "kubectl apply -f k8s/nginx/nginx.yaml"
+                sh "kubectl apply -f k8s/nginx/service.yaml"
+                sh "kubectl rollout restart deployment nginx-gateway -n nginx-gateway"
             }
         }
     }

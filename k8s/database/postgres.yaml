@@ -38,6 +38,11 @@ spec:
           volumeMounts:
             - name: postgres-storage
               mountPath: /var/lib/postgresql/data
+              subPath: pg_hba.conf
+  volumes:
+    - name: postgres-config
+      configMap:
+        name: postgres-config
   volumeClaimTemplates:
     - metadata:
         name: postgres-storage
