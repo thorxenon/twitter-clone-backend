@@ -126,50 +126,135 @@ export class TweetsService {
 
   async findAll(query: GetAllTweetsDto, userSlug: string) {
     try{
-      const existTrend = await this.trendService.findTrend(query.hashtag as string);
-      console.log('Exist trend:', existTrend);
-      if(!existTrend) return;
+      if(query.hashtag){
+        const existTrend = await this.trendService.findTrend(query.hashtag as string);
+        if(!existTrend) return;
 
-      const tweets = await this.tweetRepository.find({
-        where:{
-          body: Raw(
-            (alias) =>
-              `translate(lower(${alias}), 'áàãâäéèêëíìîïóòõôöúùûüçñ', 'aaaaaeeeeiiiiooooouuuucn') LIKE translate(lower(:query), 'áàãâäéèêëíìîïóòõôöúùûüçñ', 'aaaaaeeeeiiiiooooouuuucn')`,
-            { query: `%${existTrend.hashtag}%` }
-          )
-        },
-        order: {
-          createdAt: 'DESC'
-        },
-        relations: ['user', 'likes'],
-        select:{
-          id: true,
-          body: true,
-          user:{
-            slug: true,
-            name: true,
-            avatar: true
+        const tweets = await this.tweetRepository.find({
+          where:{
+            body: Raw(
+              (alias) =>
+                `translate(lower(${alias}), 'áàãâäéèêëíìîïóòõôöúùûüçñ', 'aaaaaeeeeiiiiooooouuuucn') LIKE translate(lower(:query), 'áàãâäéèêëíìîïóòõôöúùûüçñ', 'aaaaaeeeeiiiiooooouuuucn')`,
+              { query: `%${existTrend.hashtag}%` }
+            )
           },
-          image: true,
-          createdAt: true,
-          likes:{
-            userSlug: true
+          order: {
+            createdAt: 'DESC'
           },
-          replies:{
+          relations: ['user', 'likes'],
+          take: 20,
+          skip: query.page ? query.page * 20 : 0,
+          select:{
             id: true,
             body: true,
+            user:{
+              slug: true,
+              name: true,
+              avatar: true
+            },
             image: true,
             createdAt: true,
+            likes:{
+              userSlug: true
+            },
+            replies:{
+              id: true,
+              body: true,
+              image: true,
+              createdAt: true,
+            }
           }
-        }
-      });
-      if(!tweets) return [];
+        });
 
-      for(const tweet in tweets){
-        tweets[tweet].user.avatar = getUrl(tweets[tweet].user.avatar);
+        if(!tweets) return [];
+
+        for(const tweet in tweets){
+          tweets[tweet].user.avatar = getUrl(tweets[tweet].user.avatar);
+        }
+
+        return tweets;
+      }
+      
+      if(query.author){
+        const tweets = await this.tweetRepository.find({
+          where:{
+            userSlug: query.author
+          },
+          order: {
+            createdAt: 'DESC'
+          },
+          take: 20,
+          skip: query.page ? query.page * 20 : 0,
+          relations: ['user', 'likes'],
+          select:{
+            id: true,
+            body: true,
+            user:{
+              slug: true,
+              name: true,
+              avatar: true
+            },
+            image: true,
+            createdAt: true,
+            likes:{
+              userSlug: true
+            },
+            replies:{
+              id: true,
+              body: true,
+              image: true,
+              createdAt: true,
+            }
+          }
+        });
+
+        if(!tweets) return [];
+
+        for(const tweet in tweets){
+          tweets[tweet].user.avatar = getUrl(tweets[tweet].user.avatar);
+        }
+
+        return tweets;
       }
 
-      return tweets;
+      if(!query.hashtag && !query.author){
+        const tweets = await this.tweetRepository.find({
+          order: {
+            createdAt: 'DESC'
+          },
+          take: 20,
+          skip: query.page ? query.page * 20 : 0,
+          relations: ['user', 'likes'],
+          select:{
+            id: true,
+            body: true,
+            user:{
+              slug: true,
+              name: true,
+              avatar: true
+            },
+            image: true,
+            createdAt: true,
+            likes:{
+              userSlug: true
+            },
+            replies:{
+              id: true,
+              body: true,
+              image: true,
+              createdAt: true,
+            }
+          }
+        });
+        if(!tweets) return [];
+
+        for(const tweet in tweets){
+          tweets[tweet].user.avatar = getUrl(tweets[tweet].user.avatar);
+        }
+
+        return tweets;
+      }
+
     }catch(error){
       throw new HttpException(`Error fetching tweets: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }

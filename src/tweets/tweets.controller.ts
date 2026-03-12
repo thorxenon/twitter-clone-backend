@@ -66,7 +66,6 @@ export class TweetsController {
 
   @Get()
   async findAll(@Query() query: GetAllTweetsDto, @Req() req: Request) {
-    console.log('Received query parameters:', query);
     return await this.tweetsService.findAll(query, req.user?.slug as string);
   }
 
