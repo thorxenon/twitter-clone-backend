@@ -91,7 +91,7 @@ pipeline {
                         --from-literal=ADMIN_EMAIL="${ADMIN_EMAIL}" \
                         --from-literal=ADMIN_FULL_NAME="${ADMIN_FULL_NAME}" \
                         --from-literal=ADMIN_BIRTH_DATE="${ADMIN_BIRTH_DATE}" \
-                        -n nestp-app \
+                        -n nest-app \
                         --dry-run=client -o yaml | kubectl apply -f -
                         '''
                 }
