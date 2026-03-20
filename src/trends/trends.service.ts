@@ -12,11 +12,6 @@ export class TrendsService {
     private readonly trendRepository: Repository<Trend>
   ){}
 
-
-  create(createTrendDto: CreateTrendDto) {
-    return 'This action adds a new trend';
-  }
-
   async createTrendFromNewTweet(hashtag: DeepPartial<Trend>[]){
     try{
       if(!hashtag.length){
