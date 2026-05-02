@@ -1,15 +1,15 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { LoginDto } from 'src/auth/dto/login.dto';
+import { LoginDto } from './../auth/dto/login.dto';
 import { In, Not, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getUrl } from 'src/utils/url';
+import { getUrl } from './../utils/url';
 import { Follow } from './entities/follow.entity';
-import { TweetsService } from 'src/tweets/tweets.service';
+import { TweetsService } from './../tweets/tweets.service';
 
 @Injectable()
 export class UsersService {

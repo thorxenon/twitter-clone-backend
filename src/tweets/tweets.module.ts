@@ -4,12 +4,12 @@ import { TweetsController } from './tweets.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Tweet } from './entities/tweet.entity';
 import { PassportModule } from '@nestjs/passport';
-import { RoleHasPermission } from 'src/auth/entities/roleHasPermission.entity';
-import { User } from 'src/users/entities/user.entity';
-import { Like } from 'src/likes/entities/like.entity';
-import { Trend } from 'src/trends/entities/trend.entity';
-import { TrendsService } from 'src/trends/trends.service';
-import { LikesService } from 'src/likes/likes.service';
+import { RoleHasPermission } from './../auth/entities/roleHasPermission.entity';
+import { User } from './../users/entities/user.entity';
+import { Like } from './../likes/entities/like.entity';
+import { Trend } from './../trends/entities/trend.entity';
+import { TrendsService } from './../trends/trends.service';
+import { LikesService } from './../likes/likes.service';
 
 @Module({
   imports: [

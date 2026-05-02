@@ -21,6 +21,7 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "typeRoots": ["./src/types", "./node_modules/@types"],
+    "strictPropertyInitialization": false,
     "noFallthroughCasesInSwitch": false
   }
 }

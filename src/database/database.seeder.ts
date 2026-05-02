@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Role } from "src/auth/entities/role.entity";
-import { User } from "src/users/entities/user.entity";
+import { Role } from "./../auth/entities/role.entity";
+import { User } from "./../users/entities/user.entity";
 import { DeepPartial, Repository } from "typeorm";
 
 @Injectable()
@@ -44,7 +44,7 @@ export class DatabaseSeeder{
             await this.userRepository.save(newUserAdmin);
             await this.userRepository.save(defaultUserAdmin);
             console.log("Database seeded successfully.");
-        }catch(error){
+        }catch(error: any){
             console.error("Error seeding database:", error);
             throw new Error("Error seeding database", error);
         }

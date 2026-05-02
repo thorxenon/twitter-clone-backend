@@ -1,5 +1,5 @@
 import { IsEmail, IsNotEmpty, IsOptional, IsString } from "class-validator";
-import { IsExclusiveWith } from "src/utils/isExclusiveWith.validator";
+import { IsExclusiveWith } from "./../../utils/isExclusiveWith.validator";
 
 
 
