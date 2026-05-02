@@ -4,11 +4,11 @@ import { UpdateTweetDto } from './dto/update-tweet.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Tweet } from './entities/tweet.entity';
 import { DeepPartial, In, IsNull, Raw, Repository } from 'typeorm';
-import { Trend } from 'src/trends/entities/trend.entity';
-import { TrendsService } from 'src/trends/trends.service';
-import { LikesService } from 'src/likes/likes.service';
-import { getUrl } from 'src/utils/url';
-import { Follow } from 'src/users/entities/follow.entity';
+import { Trend } from './../trends/entities/trend.entity';
+import { TrendsService } from './../trends/trends.service';
+import { LikesService } from './../likes/likes.service';
+import { getUrl } from './../utils/url';
+import { Follow } from './../users/entities/follow.entity';
 import { GetAllTweetsDto } from './dto/get-all.dto';
 
 @Injectable()
@@ -75,7 +75,7 @@ export class TweetsService {
       }
 
       return newTweet;
-    }catch(error){
+    }catch(error: any){
       throw new HttpException(`Error creating tweet: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -109,7 +109,7 @@ export class TweetsService {
       }
 
       return answers;
-    } catch (error) {
+    } catch (error: any) {
       throw new HttpException(`Error fetching answers: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -117,7 +117,7 @@ export class TweetsService {
   async getTweetCountByUserSlug(slug: string): Promise<number>{
     try{
       return await this.tweetRepository.count({where: { userSlug: slug } });
-    }catch(error){
+    }catch(error: any){
       throw new HttpException(`Error fetching tweet count: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -255,7 +255,7 @@ export class TweetsService {
         return tweets;
       }
 
-    }catch(error){
+    }catch(error: any){
       throw new HttpException(`Error fetching tweets: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -311,7 +311,7 @@ export class TweetsService {
       }
 
       return tweets;
-    }catch(error){
+    }catch(error: any){
       throw new HttpException(`Error fetching user tweets: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -402,7 +402,7 @@ export class TweetsService {
         delete tweet.likes;
         return tweet;
       });
-    } catch (error) {
+    } catch (error: any) {
       throw new HttpException(`Error fetching tweet feed: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -452,7 +452,7 @@ export class TweetsService {
       });
 
       return search;
-    } catch (error) {
+    } catch (error: any) {
       throw new HttpException(`Error searching tweets: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
