@@ -32,7 +32,7 @@ pipeline {
                     string(credentialsId: 'db-port', variable: 'DB_PORT')
                 ]) {
                     
-                    sh '''
+                    bat '''
                         kubectl create secret generic db-secret \
                         --from-literal=DB_PASSWORD="${DB_PASSWORD}" \
                         --from-literal=DB_USER="${DB_USER}" \
@@ -42,8 +42,8 @@ pipeline {
                         -n postgres --dry-run=client -o yaml | kubectl apply -f -
                         '''
                 }
-                sh "kubectl apply -f k8s/database/"
-                sh "kubectl rollout restart statefulset postgres -n postgres"
+                bat "kubectl apply -f k8s/database/"
+                bat "kubectl rollout restart statefulset postgres -n postgres"
             }
         }
 
@@ -65,7 +65,7 @@ pipeline {
                     string(credentialsId: 'admin-birth-date', variable: 'ADMIN_BIRTH_DATE')
                 ]) {
                     
-                    sh '''
+                    bat '''
                         kubectl create secret generic app-secret \
                         --from-literal=DB_PASSWORD="${DB_PASSWORD}" \
                         --from-literal=DB_USER="${DB_USER}" \
@@ -84,16 +84,16 @@ pipeline {
                         '''
                 }
 
-                sh "kubectl apply -f k8s/app/"
-                sh "kubectl rollout restart deployment app -n nest-app"
+                bat "kubectl apply -f k8s/app/"
+                bat "kubectl rollout restart deployment app -n nest-app"
             }
         }
 
         stage('Deploy Load Balancer on Kubernetes') {
             steps {
                 //deploying nginx load balancer on kubernetes cluster
-                sh "kubectl apply -f k8s/nginx/"
-                sh "kubectl rollout restart deployment nginx-gateway -n nginx-gateway"
+                bat "kubectl apply -f k8s/nginx/"
+                bat "kubectl rollout restart deployment nginx-gateway -n nginx-gateway"
             }
         }
     }
