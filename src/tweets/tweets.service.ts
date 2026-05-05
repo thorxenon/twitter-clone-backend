@@ -4,11 +4,11 @@ import { UpdateTweetDto } from './dto/update-tweet.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Tweet } from './entities/tweet.entity';
 import { DeepPartial, In, IsNull, Raw, Repository } from 'typeorm';
-import { Trend } from 'src/trends/entities/trend.entity';
-import { TrendsService } from 'src/trends/trends.service';
-import { LikesService } from 'src/likes/likes.service';
-import { getUrl } from 'src/utils/url';
-import { Follow } from 'src/users/entities/follow.entity';
+import { Trend } from './../trends/entities/trend.entity';
+import { TrendsService } from './../trends/trends.service';
+import { LikesService } from './../likes/likes.service';
+import { getUrl } from './../utils/url';
+import { Follow } from './../users/entities/follow.entity';
 import { GetAllTweetsDto } from './dto/get-all.dto';
 
 @Injectable()
@@ -75,7 +75,7 @@ export class TweetsService {
       }
 
       return newTweet;
-    }catch(error){
+    }catch(error: any){
       throw new HttpException(`Error creating tweet: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -109,7 +109,7 @@ export class TweetsService {
       }
 
       return answers;
-    } catch (error) {
+    } catch (error: any) {
       throw new HttpException(`Error fetching answers: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -117,7 +117,7 @@ export class TweetsService {
   async getTweetCountByUserSlug(slug: string): Promise<number>{
     try{
       return await this.tweetRepository.count({where: { userSlug: slug } });
-    }catch(error){
+    }catch(error: any){
       throw new HttpException(`Error fetching tweet count: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -126,51 +126,136 @@ export class TweetsService {
 
   async findAll(query: GetAllTweetsDto, userSlug: string) {
     try{
-      const existTrend = await this.trendService.findTrend(query.hashtag as string);
-      console.log('Exist trend:', existTrend);
-      if(!existTrend) return;
+      if(query.hashtag){
+        const existTrend = await this.trendService.findTrend(query.hashtag as string);
+        if(!existTrend) return;
 
-      const tweets = await this.tweetRepository.find({
-        where:{
-          body: Raw(
-            (alias) =>
-              `translate(lower(${alias}), 'áàãâäéèêëíìîïóòõôöúùûüçñ', 'aaaaaeeeeiiiiooooouuuucn') LIKE translate(lower(:query), 'áàãâäéèêëíìîïóòõôöúùûüçñ', 'aaaaaeeeeiiiiooooouuuucn')`,
-            { query: `%${existTrend.hashtag}%` }
-          )
-        },
-        order: {
-          createdAt: 'DESC'
-        },
-        relations: ['user', 'likes'],
-        select:{
-          id: true,
-          body: true,
-          user:{
-            slug: true,
-            name: true,
-            avatar: true
+        const tweets = await this.tweetRepository.find({
+          where:{
+            body: Raw(
+              (alias) =>
+                `translate(lower(${alias}), 'áàãâäéèêëíìîïóòõôöúùûüçñ', 'aaaaaeeeeiiiiooooouuuucn') LIKE translate(lower(:query), 'áàãâäéèêëíìîïóòõôöúùûüçñ', 'aaaaaeeeeiiiiooooouuuucn')`,
+              { query: `%${existTrend.hashtag}%` }
+            )
           },
-          image: true,
-          createdAt: true,
-          likes:{
-            userSlug: true
+          order: {
+            createdAt: 'DESC'
           },
-          replies:{
+          relations: ['user', 'likes'],
+          take: 20,
+          skip: query.page ? query.page * 20 : 0,
+          select:{
             id: true,
             body: true,
+            user:{
+              slug: true,
+              name: true,
+              avatar: true
+            },
             image: true,
             createdAt: true,
+            likes:{
+              userSlug: true
+            },
+            replies:{
+              id: true,
+              body: true,
+              image: true,
+              createdAt: true,
+            }
           }
-        }
-      });
-      if(!tweets) return [];
+        });
 
-      for(const tweet in tweets){
-        tweets[tweet].user.avatar = getUrl(tweets[tweet].user.avatar);
+        if(!tweets) return [];
+
+        for(const tweet in tweets){
+          tweets[tweet].user.avatar = getUrl(tweets[tweet].user.avatar);
+        }
+
+        return tweets;
+      }
+      
+      if(query.author){
+        const tweets = await this.tweetRepository.find({
+          where:{
+            userSlug: query.author
+          },
+          order: {
+            createdAt: 'DESC'
+          },
+          take: 20,
+          skip: query.page ? query.page * 20 : 0,
+          relations: ['user', 'likes'],
+          select:{
+            id: true,
+            body: true,
+            user:{
+              slug: true,
+              name: true,
+              avatar: true
+            },
+            image: true,
+            createdAt: true,
+            likes:{
+              userSlug: true
+            },
+            replies:{
+              id: true,
+              body: true,
+              image: true,
+              createdAt: true,
+            }
+          }
+        });
+
+        if(!tweets) return [];
+
+        for(const tweet in tweets){
+          tweets[tweet].user.avatar = getUrl(tweets[tweet].user.avatar);
+        }
+
+        return tweets;
       }
 
-      return tweets;
-    }catch(error){
+      if(!query.hashtag && !query.author){
+        const tweets = await this.tweetRepository.find({
+          order: {
+            createdAt: 'DESC'
+          },
+          take: 20,
+          skip: query.page ? query.page * 20 : 0,
+          relations: ['user', 'likes'],
+          select:{
+            id: true,
+            body: true,
+            user:{
+              slug: true,
+              name: true,
+              avatar: true
+            },
+            image: true,
+            createdAt: true,
+            likes:{
+              userSlug: true
+            },
+            replies:{
+              id: true,
+              body: true,
+              image: true,
+              createdAt: true,
+            }
+          }
+        });
+        if(!tweets) return [];
+
+        for(const tweet in tweets){
+          tweets[tweet].user.avatar = getUrl(tweets[tweet].user.avatar);
+        }
+
+        return tweets;
+      }
+
+    }catch(error: any){
       throw new HttpException(`Error fetching tweets: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -226,7 +311,7 @@ export class TweetsService {
       }
 
       return tweets;
-    }catch(error){
+    }catch(error: any){
       throw new HttpException(`Error fetching user tweets: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -317,7 +402,7 @@ export class TweetsService {
         delete tweet.likes;
         return tweet;
       });
-    } catch (error) {
+    } catch (error: any) {
       throw new HttpException(`Error fetching tweet feed: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -367,7 +452,7 @@ export class TweetsService {
       });
 
       return search;
-    } catch (error) {
+    } catch (error: any) {
       throw new HttpException(`Error searching tweets: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }

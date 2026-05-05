@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query, HttpException
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { TweetsService } from 'src/tweets/tweets.service';
+import { TweetsService } from './../tweets/tweets.service';
 import type { Request } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 

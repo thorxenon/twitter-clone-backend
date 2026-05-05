@@ -5,10 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Role } from './entities/role.entity';
 import { Permission } from './entities/permission.entity';
 import { RoleHasPermission } from './entities/roleHasPermission.entity';
-import { JwtStrategy } from 'src/strategies/jwt.strategy';
+import { JwtStrategy } from './../strategies/jwt.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UsersModule } from 'src/users/users.module';
+import { UsersModule } from './../users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 
 @Module({

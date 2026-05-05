@@ -1,15 +1,15 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/users/entities/user.entity';
+import { User } from './../users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { SignUpDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import slug from 'slug';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from './../users/users.service';
 import { Role } from './entities/role.entity';
-import { getUrl } from 'src/utils/url';
+import { getUrl } from './../utils/url';
 
 @Injectable()
 export class AuthService {
@@ -100,7 +100,7 @@ export class AuthService {
             return {
                 token
             };
-        }catch(error){
+        }catch(error: any){
             throw new HttpException(error.message, error.status || 500);
         }
     }

@@ -3,16 +3,16 @@ import { TweetsService } from './tweets.service';
 import { CreateTweetDto } from './dto/create-tweet.dto';
 import { CreateReplyTweetDto } from './dto/create-reply.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { PermissionGuard } from 'src/guards/permission.guard';
-import { RequiredPermission } from 'src/decorators/permission.decorator';
+import { PermissionGuard } from './../guards/permission.guard';
+import { RequiredPermission } from './../decorators/permission.decorator';
 import { UpdateTweetDto } from './dto/update-tweet.dto';
-import { CreateLikeDto } from 'src/likes/dto/create-like.dto';
+import { CreateLikeDto } from './../likes/dto/create-like.dto';
 import type { Request } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { join } from 'path';
 import { existsSync, mkdirSync } from 'fs';
-import { LikesService } from 'src/likes/likes.service';
+import { LikesService } from './../likes/likes.service';
 import { GetAllTweetsDto } from './dto/get-all.dto';
 
 @Controller('tweets')
@@ -66,7 +66,6 @@ export class TweetsController {
 
   @Get()
   async findAll(@Query() query: GetAllTweetsDto, @Req() req: Request) {
-    console.log('Received query parameters:', query);
     return await this.tweetsService.findAll(query, req.user?.slug as string);
   }
 

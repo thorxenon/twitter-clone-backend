@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Permission } from "src/auth/entities/permission.entity";
+import { Permission } from "./../auth/entities/permission.entity";
 import { Repository } from "typeorm";
 
 @Injectable()

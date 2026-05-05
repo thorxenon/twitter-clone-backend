@@ -1,8 +1,8 @@
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { InjectRepository } from "@nestjs/typeorm";
-import { RoleHasPermission } from "src/auth/entities/roleHasPermission.entity";
-import { PERMISSION_KEY } from "src/decorators/permission.decorator";
+import { RoleHasPermission } from "./../auth/entities/roleHasPermission.entity";
+import { PERMISSION_KEY } from "./../decorators/permission.decorator";
 import { Repository } from "typeorm";
 
 @Injectable()
@@ -39,7 +39,7 @@ export class PermissionGuard implements CanActivate{
             if(!hasPermission) throw new ForbiddenException('Access Denied');
 
             return true;
-        }catch(err){
+        }catch(err: any){
             console.error('PermissionGuard Error:', err);
             throw new ForbiddenException('Access Denied');
         }
