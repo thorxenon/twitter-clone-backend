@@ -95,6 +95,7 @@ pipeline {
             steps {
                 //deploying nginx load balancer on kubernetes cluster
                 sh "kubectl apply -f k8s/nginx/"
+                sh "kubectl apply -f k8s/nginx/namespace.yaml"
                 sh "kubectl rollout restart deployment nginx-gateway -n nginx-gateway"
             }
         }
