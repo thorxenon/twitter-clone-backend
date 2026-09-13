@@ -24,6 +24,7 @@ pipeline {
         stage('Deploy Database on Kubernetes'){
             steps {
                 //deploying the database on kubernetes cluster
+                sh "kubectl apply -f k8s/database/namespace.yaml"
                 withCredentials([
                     string(credentialsId: 'db-password', variable: 'DB_PASSWORD'),
                     string(credentialsId: 'db-user', variable: 'DB_USER'),
@@ -50,6 +51,7 @@ pipeline {
         stage('Deploy Nest Api on Kubernetes') {
             steps {
                 //deploying the app on kubernetes cluster
+                sh "kubectl apply -f k8s/app/namespace.yaml"
                 withCredentials([
                     string(credentialsId: 'db-password', variable: 'DB_PASSWORD'),
                     string(credentialsId: 'db-user', variable: 'DB_USER'),
