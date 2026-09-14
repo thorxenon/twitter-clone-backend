@@ -25,7 +25,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry(
-                        'https://registry.hub.docker.com',
+                        '',
                         'dockerhub-credentials'
                     ) {
                         def image = docker.image("${IMAGE_NAME}:latest")
