@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: twitter-clone-backend:latest
+          image: thorxenon/twitter-clone-backend:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
