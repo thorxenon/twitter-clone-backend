@@ -107,7 +107,7 @@ pipeline {
 
                 sh "kubectl apply -f k8s/app/configmap.yaml"
                 sh "kubectl apply -f k8s/app/deployment.yaml"
-                sh "kubectl apply -f k8s/app/service.yaml"
+                sh "kubectl apply -f k8s/app/app-service.yaml"
                 sh "kubectl rollout restart deployment app -n nest-app"
             }
         }
