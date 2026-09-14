@@ -1,6 +1,9 @@
+import groovy.transform.Field
+
+@Field def dockerapp
+
 pipeline {
     agent any
-    def dockerapp
 
     environment {
         IMAGE_NAME = 'thorxenon/twitter-clone-backend'
